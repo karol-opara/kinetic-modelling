@@ -1,4 +1,79 @@
 function data=getExperimentalData()
+%data = getBatchReactionData();
+[dataPermite, dataRetentate] = getMembraneReactionData();
+end
+
+function [dataPermite, dataRetentate] = getMembraneReactionData()
+expDataP = readMembraneDataPermite();
+expDataR = readMembraneDataRetentate();
+%expData = expData([2,6,7,8,9,11,12,13]); % remove bad-looking data
+
+wtpDataP = expData2wtp(expDataP);
+wtpzDataP = calculateZ(wtpDataP);
+mDataP = wtpData2mpml(wtpzDataP);
+%dataP = removeWrongPoints(mDataP);
+dataPermite = mDataP;
+close all
+%plotWtpData(data);
+%plotMpData(data);
+plotMlData(dataPermite, ' permite');
+
+
+
+
+wtpDataR = expData2wtp(expDataR);
+wtpzDataR = calculateZ(wtpDataR);
+mDataR = wtpData2mpml(wtpzDataR);
+%dataR = removeWrongPoints(mDataR);
+dataRetentate = mDataP;
+plotMlData(dataRetentate, ' retentate');
+
+
+%save saveMembraneExperimentalData20130711
+
+
+end
+
+function expData = readMembraneDataPermite()
+table = xlsread('../Data calculation/2013-07-11_data_ppmwt_mr_permeate.xlsx');             %original data x,y in ppm,wt%
+noOfExperiments = 4;
+NaNLines = [1 9 15 25 35];
+xOffset = 8;
+for i = 1:noOfExperiments
+    ex = table((1+NaNLines(i)):(NaNLines(i+1)-1),:);
+    expData{i} = struct('timeX', ex(:,1),'timeY', ex(:,1),'timeZ', ex(:,1),...
+        'temperature', ex(1,2), 'TGMeOHRatio', ex(1,3), 'NaOH', ex(1,4),...
+        'y1wtp', ex(:,5), 'y26ppm', ex(:,6:10),...
+        'yVolume', ex(:,11), 'yDensity', ex(:,12),...
+        'x1wtp', ex(:,xOffset+5), 'x26ppm', ex(:,xOffset+(6:10)),...
+        'xVolume', ex(:,xOffset+11), 'xDensity', ex(:,xOffset+12),...
+        'z0ml', table(NaNLines(i),23:28),...
+        'reactorVolume',ex(:,22)*1e3);
+    expData{i}.zVolume = expData{i}.xVolume + expData{i}.yVolume;
+end
+end
+
+function expData = readMembraneDataRetentate()
+table = xlsread('../Data calculation/2013-07-11_data_ppmwt_mr_retentate.xlsx');             %original data x,y in ppm,wt%
+noOfExperiments = 4;
+NaNLines = [1 9 15 25 35];
+xOffset = 8;
+for i = 1:noOfExperiments
+    ex = table((1+NaNLines(i)):(NaNLines(i+1)-1),:);
+    expData{i} = struct('timeX', ex(:,1),'timeY', ex(:,1),'timeZ', ex(:,1),...
+        'temperature', ex(1,2), 'TGMeOHRatio', ex(1,3), 'NaOH', ex(1,4),...
+        'y1wtp', ex(:,5), 'y26ppm', ex(:,6:10),...
+        'yVolume', ex(:,11), 'yDensity', ex(:,12),...
+        'x1wtp', ex(:,xOffset+5), 'x26ppm', ex(:,xOffset+(6:10)),...
+        'xVolume', ex(:,xOffset+11), 'xDensity', ex(:,xOffset+12),...
+        'z0ml', table(NaNLines(i),23:28),...
+        'reactorVolume',ex(:,22)*1e3);
+    expData{i}.zVolume = expData{i}.xVolume + expData{i}.yVolume;
+end
+end
+
+
+function data = getBatchReactionData()
 expData = readData();
 
 expData = expData([2,6,7,8,9,11,12,13]); % remove bad-looking data
@@ -16,11 +91,10 @@ save saveExperimentalData20130319_8of13experiments_NRTLvalidation
 %plotWtpData(data);
 %plotMpData(data);
 plotMlData(data);
-
 end
 
 function expData = readData()
-table = xlsread('../Data calculation/data_ppmwt.xlsx');             %original data x,y in ppm,wt%
+table = xlsread('../Data calculation/2013-01-24_data_ppmwt.xlsx');             %original data x,y in ppm,wt%
 noOfExperiments = 13;
 NaNLines = [1 14 27 37 48 60 72 84 96 103 112 121 132 143];
 xOffset = 8;
@@ -170,7 +244,10 @@ title(hy,['experiment ' num2str(i)...
 end
 end
 
-function plotMlData(mlData)
+function plotMlData(mlData, name)
+if (nargin == 1)
+    name = '';
+end
 for i = 1:length(mlData)
 figure()
 [hx, hy, hz] = plotConcentrations(mlData{i}.timeX, mlData{i}.xml,...
@@ -185,7 +262,8 @@ ylabel(hy,'y [mole/l]');
 ylabel(hz,'z [mole/l]');
 title(hy,['experiment ' num2str(i)...
     ', NaOH = ' num2str(mlData{i}.NaOH)...
-    ', TG:MeOH = ' num2str(mlData{i}.TGMeOHRatio)]);
+    ', TG:MeOH = ' num2str(mlData{i}.TGMeOHRatio)...
+    name]);
 end
 end
 
