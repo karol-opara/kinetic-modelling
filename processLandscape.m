@@ -1,4 +1,4 @@
-function processLandscape(path,type)
+function processLandscape(path,plotType)
 load(path);
 
 [r, c] = size(K);
@@ -16,7 +16,7 @@ end
 [~, idxBckBest] = min(errMinCols);
 idxFwdBest = ri(idxBckBest);
 
-if (strcmp(type,'contourf'))
+if (strcmp(plotType,'contourf'))
     contourf(kF,kB,log(ErrLp),18);
     hl = line(kF,kB);
     set(hl,'LineStyle','none','Marker','.','Color','k');
@@ -32,7 +32,7 @@ if (strcmp(type,'contourf'))
     
     hl = line(kF(idxFwdBest,idxBckBest), kB(idxFwdBest,idxBckBest));
     set(hl,'LineStyle','none','Marker','d','Color',[1 1 1]);
-elseif(strcmp(type,'plot'))
+elseif(strcmp(plotType,'plot'))
     zTime = data.timeZ;
     zml = data.zml;
     

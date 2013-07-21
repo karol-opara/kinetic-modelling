@@ -30,5 +30,5 @@ else
     ylim2 = 30;
 end
 set(gca,'YGrid','on','YMinorGrid','on')
-axis([-marginX, 70+marginX, -marginY, ylim2+marginY]);
+axis([-marginX, max(max(time)+marginX,70+marginX), -marginY, ylim2+marginY]);
 end
