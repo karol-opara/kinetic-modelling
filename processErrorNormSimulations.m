@@ -1,11 +1,11 @@
-function processErrorNormSimulations
+function good = processErrorNormSimulations
 
-processRunUniqunessExperimentRepetetiveFits()
+good = processRunUniqunessExperimentRepetetiveFits()
 % processUniqunessExperimentImportanceSampling()
 
 end
 
-function processRunUniqunessExperimentRepetetiveFits()
+function good = processRunUniqunessExperimentRepetetiveFits()
 % 10 reps
 %load('Results/save_ErrorNormSimulations_RepetetiveFits_2013-07-02_175030_IIASA_KO_random_05_sys_0_regularized_001_Nouredini_10rep'); % OK, 10% accuracy
 %load('Results/save_ErrorNormSimulations_RepetetiveFits_2013-07-03_063951_IIASA_KO_random_05_sys_0_regularized_001_Jansri_10rep'); % poor results but only outer log may help
@@ -13,14 +13,18 @@ function processRunUniqunessExperimentRepetetiveFits()
 % load('Results/save_ErrorNormSimulations_RepetetiveFits_2013-07-03_211010_IIASA_KO_random_05_sys_0_regularized_01_Jansri_10rep');
 
 % 25 reps
-load('Results/save_ErrorNormSimulations_RepetetiveFits_2013-06-17_172155_IIASA_random_15_sys_0_regularized_001');
-load('Results/save_ErrorNormSimulations_RepetetiveFits_2013-06-17_151119_SRI_random_15_sys_3_regularized_001')
+%load('Results/save_ErrorNormSimulations_RepetetiveFits_2013-06-17_172155_IIASA_random_15_sys_0_regularized_001');
+%load('Results/save_ErrorNormSimulations_RepetetiveFits_2013-06-17_151119_SRI_random_15_sys_3_regularized_001')
 
 
 % 100 reps
 %load('Results/save_ErrorNormSimulations_RepetetiveFits_2013-06-20_173831_SRI_random_15_sys_0_regularized_001')
 %load('Results/save_ErrorNormSimulations_RepetetiveFits_2013-06-24_230921_SRI_random_15_sys_3_regularized_001')
 %load('Results/save_ErrorNormSimulations_RepetetiveFits_2013-06-26_174839_IIASA_KO_random_05_sys_0_regularized_001')
+
+
+% 100 reps with log regularization
+load('Results/save_ErrorNormSimulations_RepetetiveFits_2013-07-09_172446_IIASA_PPO_random_05_sys_0_regularized_01');
 
 lRelativeAccuracy = 0.5;
 uRelativeAccuracy = 1.5;
@@ -71,7 +75,7 @@ for i = 1:plen
 end
 good
 %round(nvar)
-figure()
+%figure()
 %bar3(nvar)
 %bar3(good)
 

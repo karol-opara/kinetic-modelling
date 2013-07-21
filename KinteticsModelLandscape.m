@@ -91,7 +91,8 @@ zKinetic = interp1(t,z,timeZ);
 ferr = (sum(abs(zKinetic - zml).^p)).^(1/p);
 fitErr = norm(ferr,2);
 err = 1*(fitErr) +... % fit error
-      0*log1p(norm(k,p));
+      0*log1p(norm(k,p))+...
+	  0.01*sum(abs(k-sumForward-sumBackward));
 end
 
 
