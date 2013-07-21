@@ -31,11 +31,16 @@ for i=1:length(p)
         
         expectedError = errMin{i,j}*expErrCoef;
         options = optimset('fmincon');
-        options
+        options.TolFun = 0.1;
         [lambda{i,j},errMinReg{i,j}] = fmincon(@EstimateRegularizedModel,0,[],[],[],[],[0],[],[],options,...
             poorData,p{i},q{j},type, expectedError);
         
+        relErr = abs(errMinReg{i,j}/errMin{i,j}-expectedError);
+        if(relErr>0.05)
+            warning('runRegularizationCoefficientChoice:RelErr',['too large relative error ' num2str(relErr)]);
+        end
     end
+    fprintf('.');
 end
 
 
