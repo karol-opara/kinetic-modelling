@@ -34,8 +34,8 @@ else
 end
 
 % we want to minimize: fit error and fit in constraints
-err = lambda(1)*log1p(fitErr) +... % fit error
-      lambda(2)*log1p(norm(k,2));%+... % reaction rates should not be too large
+err = lambda(1)*fitErr +... % fit error
+      lambda(2)*norm(k,2);%+... % reaction rates should not be too large
     %lambda(2)*log1p(var(sum(zKinetic.'))) + ... % the total number of moles should not much (if volume is constant)
 %     lambda(3)*log1p(sum(sum(abs(z.').*(z.'<0)))) +... % concentrations must be nonnegative
 %     lambda(4)*log1p(sum(abs(k)))+... % reaction rates should not be too large

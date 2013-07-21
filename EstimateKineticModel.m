@@ -59,7 +59,7 @@ function [k, z0opt, cmaesOut] = cmaesOptimization(dim, lBounds, uBounds, zml, ti
 opts = cmaes('defaults');
 opts.MaxFunEvals = 1e4*dim;
 % warning('EstimateKineticModel:MaxFunEvals','Max fun evals set to low value -- use for debug only');
-% opts.MaxFunEvals = 1e3*dim;
+% opts.MaxFunEvals = 1e1*dim;
 opts.MaxIter = Inf;
 opts.LBounds = lBounds;
 opts.UBounds = uBounds;
