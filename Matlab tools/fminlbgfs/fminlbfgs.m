@@ -101,7 +101,7 @@ function [x,fval,exitflag,output,grad]=fminlbfgs(funfcn,x_init,optim, varargin)
 % Read Optimalisation Parameters
 defaultopt = struct('Display','final','HessUpdate','bfgs','GoalsExactAchieve',1,'GradConstr',true,  ...
     'TolX',1e-6,'TolFun',1e-6,'GradObj','off','MaxIter',400,'MaxFunEvals',100*numel(x_init)-1,  ...
-    'DiffMaxChange',1e-1,'DiffMinChange',1e-8,'OutputFcn',[], ...
+    'DiffMaxChange',1e-1,'DiffMinChange',1e-8, 'FMinTarget', -Inf ,'OutputFcn',[], ...
     'rho',0.0100,'sigma',0.900,'tau1',3,'tau2', 0.1, 'tau3', 0.5,'StoreN',20);
 
 if (~exist('optim','var'))
@@ -255,6 +255,7 @@ while(true)
     if(gNorm <optim.TolFun), exitflag=1; end
     if(max(abs(data.xOld-data.xInitial)) <optim.TolX), exitflag=2; end
     if(data.iteration>=optim.MaxIter), exitflag=0; end
+    if(optim.FMinTarget>=data.fInitial), exitflag = -1; end
     
     % Check if exitflag is set
     if(~isempty(exitflag)), break, end;
