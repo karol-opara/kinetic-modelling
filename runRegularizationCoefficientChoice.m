@@ -1,4 +1,5 @@
 function runRegularizationCoefficientChoice(name)
+loadData = true;
 
 load saveExperimentalData20130319_8of13experiments_NRTLvalidation
 poorData = data{4};
@@ -19,29 +20,34 @@ p = {'log', 0.5,  1,  2}; % inner
 q = {NaN, 'log', 0.5,  1,  2}; % outer loss (NaN means using only inner loss)
 
 expErrCoef=1.05;
+relativeAccuracy = 0.005;
 
 pm = cell(length(p),length(q));
 errMin = zeros(length(p),length(q));
 errMinReg = zeros(length(p),length(q));
 lambda = zeros(length(p),length(q));
 
-options.MaxFunEvals = 6*1e5;
-for i=1:length(p)
-    parfor j = 1:length(q)
-        pm{i,j} = EstimateKineticModel(poorData,p{i},q{j},type,lambdaZero,options);
-        errMin(i,j) = pm{i,j}.optimizerOutput.solutions.bestever.f;        
+if (loadData)
+    load('Results/save_RegularizationCoefficients_2013-07-23_092626_1e5Dim_LBFGS_NonregularizedErrors');
+else
+    options.MaxFunEvals = 6*1e5;
+    for i=1:length(p)
+        parfor j = 1:length(q)
+            pm{i,j} = EstimateKineticModel(poorData,p{i},q{j},type,lambdaZero,options);
+            errMin(i,j) = pm{i,j}.optimizerOutput.solutions.bestever.f;
+        end
+        fprintf('.');
     end
-    fprintf('.');
+    save([savefilename '_NonregularizedErrors']);
+    disp(['Saved nonregularized errors as ' savefilename  '_NonregularizedErrors']);
+    fprintf('\n');
 end
-save([savefilename '_NonregularizedErrors']);
-disp(['Saved nonregularized errors as ' savefilename  '_NonregularizedErrors']);
-fprintf('\n');
+
 
 for i=1:length(p)
     parfor j = 1:length(q)
         expectedError = errMin(i,j)*expErrCoef;
-        options = optimset('TolFun',0.1);
-        %[lambda(i,j),errMinReg(i,j)] = fmincon(@EstimateRegularizedModel,0,[],[],[],[],[0],[],[],options,poorData,p{i},q{j},type, expectedError);
+        options = struct('FMinTarget',relativeAccuracy*errMin(i,j));
         [lambda(i,j),errMinReg(i,j)] = fminlbfgs(@EstimateRegularizedModel,1,options,poorData,p{i},q{j},type, expectedError);
         relErr = abs(errMinReg(i,j)/errMin(i,j)-expectedError);
         if(relErr>0.05)
