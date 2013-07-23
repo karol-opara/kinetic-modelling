@@ -19,7 +19,7 @@ elseif (nargin == 3)
         'No lagrange multipliers, using default ones');
 end
 if (nargin<6)
-    options = NaN;
+    options = struct();
 end
 %plotExprimentalData(data);
 
@@ -63,7 +63,7 @@ opts = cmaes('defaults');
 opts.MaxFunEvals = 1e4*dim;
 % warning('EstimateKineticModel:MaxFunEvals','Max fun evals set to low value -- use for debug only');
 % opts.MaxFunEvals = 1e1*dim;
-if(isnan(options)==false)
+if(isempty(fieldnames(options))==false) % i.e. ther is options structure provided by user
     opts.MaxFunEvals = options.MaxFunEvals;
 end
 opts.MaxIter = Inf;
@@ -76,7 +76,7 @@ opts.SaveFilename = 0;
 opts.LogFilenamePrefix = 0;
 opts.LogTime = 1;
 warning('off','cmaes:logging');
-opts.Restarts = Inf;
+opts.Restarts = 5;
 [k, ~, ~, ~, cmaesOut, ~]= cmaes('ObjectiveFunction', (lBounds+uBounds)/2, [], opts, zml, timeZ, z0ml, p, q, type,lambda);
 z0opt = z0ml;
 end
