@@ -21,25 +21,34 @@ q = {NaN, 'log', 0.5,  1,  2}; % outer loss (NaN means using only inner loss)
 expErrCoef=1.05;
 
 pm = cell(length(p),length(q));
-errMin = cell(length(p),length(q));
-errMinReg = cell(length(p),length(q));
-lambda = cell(length(p),length(q));
+errMin = zeros(length(p),length(q));
+errMinReg = zeros(length(p),length(q));
+lambda = zeros(length(p),length(q));
+
+options.MaxFunEvals = 6*1e5;
 for i=1:length(p)
     parfor j = 1:length(q)
-        pm{i,j} = EstimateKineticModel(poorData,p{i},q{j},type,lambdaZero);
-        errMin{i,j} = pm{i,j}.optimizerOutput.solutions.bestever.f;
-        
+        pm{i,j} = EstimateKineticModel(poorData,p{i},q{j},type,lambdaZero,options);
+        errMin(i,j) = pm{i,j}.optimizerOutput.solutions.bestever.f;        
+    end
+    fprintf('.');
+end
+save([savefilename '_NonregularizedErrors']);
+disp(['Saved nonregularized errors as ' savefilename  '_NonregularizedErrors']);
+fprintf('\n');
+
+for i=1:length(p)
+    parfor j = 1:length(q)
         expectedError = errMin{i,j}*expErrCoef;
-        options = optimset('fmincon');
-        options.TolFun = 0.1;
-        [lambda{i,j},errMinReg{i,j}] = fmincon(@EstimateRegularizedModel,0,[],[],[],[],[0],[],[],options,...
-            poorData,p{i},q{j},type, expectedError);
-        
+        options = optimset('TolFun',0.1);
+        %[lambda(i,j),errMinReg(i,j)] = fmincon(@EstimateRegularizedModel,0,[],[],[],[],[0],[],[],options,poorData,p{i},q{j},type, expectedError);
+        [lambda(i,j),errMinReg(i,j)] = fminlbfgs(@EstimateRegularizedModel,1,options,poorData,p{i},q{j},type, expectedError);
         relErr = abs(errMinReg{i,j}/errMin{i,j}-expectedError);
         if(relErr>0.05)
             warning('runRegularizationCoefficientChoice:RelErr',['too large relative error ' num2str(relErr)]);
         end
     end
+    save([savefilename '_partial']);
     fprintf('.');
 end
 
