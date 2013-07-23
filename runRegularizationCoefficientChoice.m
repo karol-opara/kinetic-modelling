@@ -39,11 +39,11 @@ fprintf('\n');
 
 for i=1:length(p)
     parfor j = 1:length(q)
-        expectedError = errMin{i,j}*expErrCoef;
+        expectedError = errMin(i,j)*expErrCoef;
         options = optimset('TolFun',0.1);
         %[lambda(i,j),errMinReg(i,j)] = fmincon(@EstimateRegularizedModel,0,[],[],[],[],[0],[],[],options,poorData,p{i},q{j},type, expectedError);
         [lambda(i,j),errMinReg(i,j)] = fminlbfgs(@EstimateRegularizedModel,1,options,poorData,p{i},q{j},type, expectedError);
-        relErr = abs(errMinReg{i,j}/errMin{i,j}-expectedError);
+        relErr = abs(errMinReg(i,j)/errMin(i,j)-expectedError);
         if(relErr>0.05)
             warning('runRegularizationCoefficientChoice:RelErr',['too large relative error ' num2str(relErr)]);
         end
@@ -51,8 +51,6 @@ for i=1:length(p)
     save([savefilename '_partial']);
     fprintf('.');
 end
-
-
 
 save(savefilename);
 disp(['Saved as ' savefilename]);
