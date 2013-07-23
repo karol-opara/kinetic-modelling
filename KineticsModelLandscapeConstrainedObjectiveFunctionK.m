@@ -6,7 +6,7 @@ kPenalty = log1p(abs(sum(k)-sumForward-sumBackward));
 if (kPenalty/err > 1e2)
     warning('KineticsModelLandscape:ConstrainedObjectiveFunction',['Large k penalty kPenalty/err = ' num2str(kPenalty/err)]);
 end
-err = err + 1e-3*kPenalty;
+err = err + 1e-4*kPenalty;
 end
 
 

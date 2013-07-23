@@ -1,4 +1,4 @@
-function KinteticsModelLandscape(name, condition, p, q, lambda)
+function runKinteticsModelLandscape(name, condition, p, q, lambda)
 % tmp = getExperimentalData();
 % data = tmp{5};
 load saveExperimentalData20120807
@@ -23,11 +23,11 @@ ulimb = 10;
 llimb = 0;
 
 linspf = linspace(llimf, ulimf, N);
-lgspf = [2e-2 5e-2 1e-1 2e-1 5e-1 1e0 2e0 5e0 1e1 2e1 5e1 1e2 2e2];
+lgspf = [1e-2 2e-2 5e-2 1e-1 2e-1 5e-1 1e0 2e0 5e0 1e1 2e1 5e1 1e2 2e2];
 spf = unique(sort([linspf lgspf]));
 
 linspb = linspace(llimb, ulimb, N);
-lgspb = [2e-3 5e-3 1e-2 2e-2 5e-2 1e-1 2e-1 5e-1 1e0 2e0 5e0 1e1 2e1 5e1 1e2 2e2];
+lgspb = [1e-4 2e-4 5e-4 1e-3 2e-3 5e-3 1e-2 2e-2 5e-2 1e-1 2e-1 5e-1 1e0 2e0 5e0 1e1 2e1 5e1 1e2 2e2 5e2];
 spb = unique(sort([linspb lgspb]));
 
 fwd = spf;
@@ -84,10 +84,8 @@ opts.SaveVariables = 'off';
 opts.DispFinal = 0;
 opts.DispModulo = 0;
 opts.SaveFilename = 0;
-      0*log1p(norm(k,p))+...
-	  0.01*sum(abs(k-sumForward-sumBackward));
 warning('off','cmaes:logging');
-opts.Restarts = 4;
+opts.Restarts = 5;
 %opts.PopSize = 24;
 [k, err, ~, flag, cmaesOut, ~]= cmaes('KineticsModelLandscapeConstrainedObjectiveFunctionK',...
     (lBounds+uBounds)/2, [], opts, zml, timeZ, z0ml, p, q, type,lambda,sumForward, sumBackward);
