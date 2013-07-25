@@ -28,7 +28,7 @@ errMinReg = zeros(length(p),length(q));
 lambda = zeros(length(p),length(q));
 
 if (loadData)
-    load('Results/save_RegularizationCoefficients_2013-07-23_092626_1e5Dim_LBFGS_NonregularizedErrors');
+    load('Results/save_RegularizationCoefficients_2013-07-23_092626_1e5Dim_LBFGS_PoorData_NonregularizedErrors');
 else
     options.MaxFunEvals = 6*1e5;
     for i=1:length(p)
@@ -43,12 +43,32 @@ else
     fprintf('\n');
 end
 
+opts = cmaes('defaults');
+opts.MaxFunEvals = 1e3;
+opts.MaxIter = Inf;
+opts.LBounds = 0;
+opts.UBounds = 100; % i.e. over 85 = 0.05 [accuracy] * max(max(errMin)) [no regularization erro] / 0.18 [smallest norm of reaction rates in literature]
+opts.SaveVariables = 'off';
+opts.DispFinal = 0;
+opts.DispModulo = 0;
+opts.SaveFilename = 0;
+opts.LogFilenamePrefix = 0;
+opts.LogTime = 1;
+opts.LogModulo = Inf;
+warning('off','cmaes:logging');
+opts.Restarts = 0;
+cmaesOut = [];
 
 for i=1:length(p)
     parfor j = 1:length(q)
         expectedError = errMin(i,j)*expErrCoef;
-        options = struct('FMinTarget',relativeAccuracy*errMin(i,j));
-        [lambda(i,j),errMinReg(i,j)] = fminlbfgs(@EstimateRegularizedModel,1,options,poorData,p{i},q{j},type, expectedError);
+        jOpts = opts;
+        jOpts.StopFitness = relativeAccuracy*errMin(i,j);
+        %[lambda(i,j),errMinReg(i,j)] = fminlbfgs(@EstimateRegularizedModel,rand(),options,poorData,p{i},q{j},type, expectedError);
+        [lambda(i,j), errMinReg(i,j), ~, flag, cmaesOut(i,j), ~]= cmaes('prvEstimateRegularizedModel', rand() * (opts.LBounds+opts.UBounds)/4, [], jOpts, poorData, p{i},q{j},type, expectedError);
+        if (any(strcmp(flag,'fitness')) == 0)
+            warning('runRegularizationCoefficientChoice:CmaesStopFlag',['Unexpected stop flag: ' flag]);            
+        end
         relErr = abs(errMinReg(i,j)/errMin(i,j)-expectedError);
         if(relErr>0.05)
             warning('runRegularizationCoefficientChoice:RelErr',['too large relative error ' num2str(relErr)]);
@@ -63,8 +83,4 @@ disp(['Saved as ' savefilename]);
 toc
 end
 
-function err = EstimateRegularizedModel(lambdaReg, data,p,q,type, expectedError)
-model = EstimateKineticModel(data,p,q,type,[1, lambdaReg]);
-error = model.optimizerOutput.solutions.bestever.f;
-err = abs(error-expectedError);
-end
+
