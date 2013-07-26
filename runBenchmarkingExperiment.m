@@ -1,4 +1,4 @@
-function runBenchmarkingExperiment(name, rndErr, sysErr, id,lambda)
+function runBenchmarkingExperiment(name, rndErr, sysErr, id, lambda, N)
 
 if (nargin < 2)
     rndErr = 0.15;
@@ -16,15 +16,15 @@ end
 
 % RunUniqunessExperimentImportanceSampling(randErr, sysErr)
 
-RunUniqunessExperimentRepetetiveFits(name, rndErr, sysErr,id,lambda);
+RunUniqunessExperimentRepetetiveFits(name, rndErr, sysErr,id,lambda,N);
 end
 
 
-function RunUniqunessExperimentRepetetiveFits(name, rndErr, sysErr, id,lambda)
-savefilename = ['Results/' 'save_BenchmarkingExperiment_RepetetiveFits_' ...
-    datestr(now,'yyyy-mm-dd_HHMMSS') '_' name];
+function RunUniqunessExperimentRepetetiveFits(name, rndErr, sysErr, id,lambda, N)
+savefilename = ['Results/' 'save_' datestr(now,'yyyy-mm-dd_HHMMSS') ...
+    'BenchmarkingExperiment_' num2str(N) '_Repetetive_Fits_' num2str(lambda)...
+    '_RelativeLambda_' name];
 
-N = 100;
 %warning('runBenchmarkingExperiment:RunUniqunessExperimentRepetetiveFits','Only 10 repeats');
 pnorms = {'log', 0.5, 1, 2};
 qnorms = {NaN,'log', 0.5, 1, 2};
@@ -44,7 +44,7 @@ for i = 1:plen
             p = pnorms{i};
             q = qnorms{j};
             
-            models{rep,i,j} = EstimateKineticModel(data,p,q,'batch',lambda);
+            models{rep,i,j} = EstimateKineticModel(data,p,q,'batch',lambda*lossFunctionOrderMultiplier(i,j));
             
             %         subplot(len,len,(i-1)*len+j);
             %         plotKineticModelFit(models{i,j}.data.timeZ,models{i,j}.data.zml,models{i,j}.k,models{i,j}.z0opt);
@@ -57,6 +57,11 @@ for i = 1:plen
 end
 save(savefilename);
 disp(['Saved as ' savefilename])
+end
+
+function lossMult = lossFunctionOrderMultiplier(i,j)
+load('Results/save_RegularizationCoefficients_2013-07-23_092626_1e5Dim_LBFGS_PoorData_NonregularizedErrors');
+lossMult = errMin(i,j);
 end
 
 function RunUniqunessExperimentImportanceSampling(rndErr, sysErr, name)
