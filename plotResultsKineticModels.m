@@ -1,8 +1,118 @@
 function plotResultsKineticModels()
 %plotExampleModel()
 %plotZoomedMolels();
-plotTooFastReaction();
+%plotTooFastReaction();
+plotBenchmarkExample();
 end
+
+function plotBenchmarkExample
+rndErr = 0.05;
+sysErr = [1 0 0 0 0 0];
+id = 'Noureddini';
+
+
+zc=[];
+N=5;
+for ii=1:N
+    data{ii} = CreateBenchmarkProblem20130723(rndErr, sysErr, id);
+    zc=[zc; data{ii}.zml; NaN(1,6)];
+end
+
+[tk, zk] = SolveKineticModel(data{1}.z0ml,data{1}.k,'batch');
+
+ii=1;
+lineStyle='-';
+ls2 = ':';
+clf
+hu = subplot(2,1,1);
+hold on
+ht1=plot(tk,zk(:,1),['b' lineStyle],tk,zk(:,2),['g' lineStyle],tk,zk(:,3),...
+    ['r' lineStyle],tk,zk(:,4),['c' lineStyle],tk,zk(:,5),['m' lineStyle],...
+    tk,zk(:,6),['k' lineStyle]);
+set(ht1,'LineWidth',2);
+zTime=repmat([data{ii}.timeZ NaN],1,N);
+plot(zTime, zc(:,1), ['bd' ls2],zTime, zc(:,2), ['gx' ls2],zTime, zc(:,3), ['ro' ls2],...
+    zTime, zc(:,4), ['c+' ls2],zTime, zc(:,5), ['m*' ls2],zTime, zc(:,6), ['ks' ls2]);
+ax1 = [-1 91 -0.2 10];
+axis(ax1)
+xlabel('time [min]');
+ylabel('concentration [mol/l]')
+box('on');
+hd = subplot(2,1,2);
+hold on
+hm1=plot(tk,zk(:,1),['b' lineStyle],tk,zk(:,2),['g' lineStyle],tk,zk(:,3),...
+    ['r' lineStyle],tk,zk(:,4),['c' lineStyle],tk,zk(:,5),['m' lineStyle],...
+    tk,zk(:,6),['k' lineStyle]);
+set(hm1,'LineWidth',2);
+plot(zTime, zc(:,1), ['bd' ls2],zTime, zc(:,2), ['gx' ls2],zTime, zc(:,3), ['ro' ls2],...
+    zTime, zc(:,4), ['c+' ls2],zTime, zc(:,5), ['m*' ls2],zTime, zc(:,6), ['ks' ls2]);
+ax2 = [-1 91 -0.02 1.5];
+axis(ax2)
+xlabel('time [min]');
+ylabel('concentration [mol/l]')
+box('on');
+
+[xt1, yt1] = ds2nfu(ht1, [ax1(1) ax1(2)],[ax1(3) ax1(3)]);
+[xt2, yt2] = ds2nfu(hm1, [ax2(1) ax2(2)],[ax2(4) ax2(4)]);
+x1 = [xt1, NaN, xa1];
+x2 = [xt2, NaN, xa2];
+y1 = [yt1, NaN, ya1];
+y2 = [yt2, NaN, ya2];
+for i=1:numel(x1)
+    h = annotation('line',[x1(i) x2(i)],[y1(i) y2(i)]);
+    set(h,'LineStyle','--');
+end
+
+
+
+    function data = CreateBenchmarkProblem20130723(rndErr, sysErr, id)
+        % first
+        if (strcmp(id,'Oh'))
+            k = [0.0500
+                0.1100
+                0.2150
+                1.2280
+                0.2420
+                0.0070];
+        elseif (strcmp(id,'Jansri'))
+            k = [2.6
+                0.248
+                1.186
+                0.227
+                2.303
+                0.022];
+        elseif (strcmp(id,'Noureddini'))
+            k = [0.0500
+                0.1100
+                0.2150
+                1.2280
+                0.2420
+                0.0070];
+        else
+            error('runBenchmarkingExperiment:WrongID','Wrong ID of the reaction rates');
+        end
+        
+        conc = [6 0 1 0 0 0];
+        z0ml = 10 * conc/sum(conc);
+        if (strcmp(id,'Oh'))
+            timeZ = [2     4     6     8    10    12    20    30    40    50    60];
+        elseif(strcmp(id,'Jansri'))
+            timeZ = [0.5, 1, 3, 5, 7, 9, 12, 15, 18, 20 ];
+        elseif (strcmp(id,'Noureddini'))
+            timeZ = [1 2 3 4 5 6 8 10 15 20 30 50 60 90]; % Nouredini and Zhou (1997)
+        end
+        [t, z] = SolveKineticModel(z0ml,k);
+        zKinetic = interp1(t,z,timeZ);
+        
+        rnd = rndErr* sqrt(pi/2) * randn(length(timeZ),length(z0ml));
+        zml = zKinetic+zKinetic.*rnd+repmat(sysErr,length(timeZ),1);
+        
+        data = struct('k',k,'z0ml',z0ml,'timeZ',timeZ,'zml',zml,'zKinetic',zKinetic);
+        
+    end
+end
+
+
 
 function plotTooFastReaction()
 ax3 = getAxis(0.1);

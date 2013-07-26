@@ -1,13 +1,12 @@
-function ErrorNormSimulations(name, rndErr, sysErr, id,lambda)
-%ErrorNormSimulations
+function runBenchmarkingExperiment(name, rndErr, sysErr, id,lambda)
 
 if (nargin < 2)
-	rndErr = 0.15;
-	sysErr = [1 0 0 0 0 0];
+    rndErr = 0.15;
+    sysErr = [1 0 0 0 0 0];
 end
 if (nargin < 4)
     id = 'Oh';
-    warning('ErrorNormSimulations:NoExperimentID','No experiment ID provided');
+    warning('runBenchmarkingExperiment:NoExperimentID','No experiment ID provided');
 end
 %rng('shuffle')
 
@@ -22,14 +21,14 @@ end
 
 
 function RunUniqunessExperimentRepetetiveFits(name, rndErr, sysErr, id,lambda)
-savefilename = ['Results/' 'save_ErrorNormSimulations_RepetetiveFits_' ...
+savefilename = ['Results/' 'save_BenchmarkingExperiment_RepetetiveFits_' ...
     datestr(now,'yyyy-mm-dd_HHMMSS') '_' name];
 
 N = 100;
-%warning('ErrorNormSimulations:RunUniqunessExperimentRepetetiveFits','Only 10 repeats');
+%warning('runBenchmarkingExperiment:RunUniqunessExperimentRepetetiveFits','Only 10 repeats');
 pnorms = {'log', 0.5, 1, 2};
 qnorms = {NaN,'log', 0.5, 1, 2};
-%warning('ErrorNormSimulations:RunUniqunessExperimentRepetetiveFits','Only NaN norms tried');
+%warning('runBenchmarkingExperiment:RunUniqunessExperimentRepetetiveFits','Only NaN norms tried');
 plen = length(pnorms);
 qlen = length(qnorms);
 models = cell(N,plen,plen);
@@ -61,7 +60,7 @@ disp(['Saved as ' savefilename])
 end
 
 function RunUniqunessExperimentImportanceSampling(rndErr, sysErr, name)
-savefilename = ['Results/' 'save_ErrorNormSimulations_ImportanceSamping_' ...
+savefilename = ['Results/' 'save_BenchmarkingExperiment_ImportanceSamping_' ...
     datestr(now,'yyyy-mm-dd_HHMMSS') '_' name];
 norms = [0.5];
 len = length(norms);
@@ -78,12 +77,12 @@ for i = 1:len
         
         samples{i,j} = UniqunessOfKineticSolution(p,q,data,N);
         %models{i,j} = EstimateKineticModel(data,p,q);
-        save(['saveTmpErrorNormSimulations_' name]);
+        save(['saveTmpBenchmarkingExperiment_' name]);
         
-%         subplot(len,len,(i-1)*len+j);
-%         plotKineticModelFit(models{i,j}.data.timeZ,models{i,j}.data.zml,models{i,j}.k,models{i,j}.z0opt);
-%         title(['L^p = ' num2str(p) ', L^q = ' num2str(q)]);
-%         drawnow;
+        %         subplot(len,len,(i-1)*len+j);
+        %         plotKineticModelFit(models{i,j}.data.timeZ,models{i,j}.data.zml,models{i,j}.k,models{i,j}.z0opt);
+        %         title(['L^p = ' num2str(p) ', L^q = ' num2str(q)]);
+        %         drawnow;
     end
 end
 save(savefilename);
@@ -93,23 +92,23 @@ function [sample, iter] = UniqunessOfKineticSolution(p,q,data, N)
 % Use the importance sampling to assess uniquness of solution
 kExperimental = [
     5.000E-02	1.100E-01	2.150E-01	1.228E+00	2.420E-01	7.000E-03
-1.030E-01	3.100E-02	6.300E-02	1.000E-02	1.600E-02	1.750E-01
-2.860E-02	1.440E-02	5.800E-03	2.130E-02	1.110E-02	5.000E-04					
-8.000E-01	5.950E+00	1.050E+01	1.590E+01	3.400E-01	3.500E-03
-1.550E+00	8.500E+00	2.050E+01	2.250E+01	6.100E-01	1.200E-03
-2.050E+00	1.090E+01	3.010E+01	2.950E+01	8.300E-01	1.000E-04
-1.500E+00	1.370E+01	2.300E+01	4.140E+01	4.000E-01	2.600E-03
-3.060E+00	2.390E+01	3.250E+01	5.750E+01	5.400E-01	9.000E-04
-4.000E+00	2.700E+01	5.500E+01	6.550E+01	9.100E-01	1.000E-04
-2.579E+00	2.000E-02	6.000E-01	1.010E-01	9.000E-01	2.100E-02
-2.600E+00	2.480E-01	1.186E+00	2.270E-01	2.303E+00	2.200E-02
-2.620E+00	7.000E-01	1.210E+00	4.000E-01	2.360E+00	2.800E-02
-2.470E-02	5.580E-02	7.030E-02	1.500E-03	3.940E-02	4.200E-03
-7.720E-02	1.680E-01	9.720E-02	2.650E-02	6.700E-02	8.800E-03
-4.430E-02	2.334E-01	6.450E-02	6.990E-02	2.681E-01	4.700E-03
-8.790E-02	4.777E-01	1.555E-01	1.396E-01	7.478E-01	6.100E-03
-1.057E-02	0.000E+00	1.184E-01	8.187E-02	1.310E-01	2.010E-03
-];
+    1.030E-01	3.100E-02	6.300E-02	1.000E-02	1.600E-02	1.750E-01
+    2.860E-02	1.440E-02	5.800E-03	2.130E-02	1.110E-02	5.000E-04
+    8.000E-01	5.950E+00	1.050E+01	1.590E+01	3.400E-01	3.500E-03
+    1.550E+00	8.500E+00	2.050E+01	2.250E+01	6.100E-01	1.200E-03
+    2.050E+00	1.090E+01	3.010E+01	2.950E+01	8.300E-01	1.000E-04
+    1.500E+00	1.370E+01	2.300E+01	4.140E+01	4.000E-01	2.600E-03
+    3.060E+00	2.390E+01	3.250E+01	5.750E+01	5.400E-01	9.000E-04
+    4.000E+00	2.700E+01	5.500E+01	6.550E+01	9.100E-01	1.000E-04
+    2.579E+00	2.000E-02	6.000E-01	1.010E-01	9.000E-01	2.100E-02
+    2.600E+00	2.480E-01	1.186E+00	2.270E-01	2.303E+00	2.200E-02
+    2.620E+00	7.000E-01	1.210E+00	4.000E-01	2.360E+00	2.800E-02
+    2.470E-02	5.580E-02	7.030E-02	1.500E-03	3.940E-02	4.200E-03
+    7.720E-02	1.680E-01	9.720E-02	2.650E-02	6.700E-02	8.800E-03
+    4.430E-02	2.334E-01	6.450E-02	6.990E-02	2.681E-01	4.700E-03
+    8.790E-02	4.777E-01	1.555E-01	1.396E-01	7.478E-01	6.100E-03
+    1.057E-02	0.000E+00	1.184E-01	8.187E-02	1.310E-01	2.010E-03
+    ];
 
 kMean = 1*mean(kExperimental);
 
@@ -183,7 +182,7 @@ elseif (strcmp(id,'Noureddini'))
         0.2420
         0.0070];
 else
-    error('ErrorNormSimulation:WrongID','Wrong ID of the reaction rates');
+    error('runBenchmarkingExperiment:WrongID','Wrong ID of the reaction rates');
 end
 
 conc = [6 0 1 0 0 0];

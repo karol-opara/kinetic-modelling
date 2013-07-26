@@ -1,4 +1,4 @@
-function good = processErrorNormSimulations
+function good = processBenchmarkingExperiment
 
 good = processRunUniqunessExperimentRepetetiveFits()
 % processUniqunessExperimentImportanceSampling()
