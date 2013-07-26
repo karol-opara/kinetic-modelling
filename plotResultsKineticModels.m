@@ -33,31 +33,36 @@ set(ht1,'LineWidth',2);
 zTime=repmat([data{ii}.timeZ NaN],1,N);
 plot(zTime, zc(:,1), ['bd' ls2],zTime, zc(:,2), ['gx' ls2],zTime, zc(:,3), ['ro' ls2],...
     zTime, zc(:,4), ['c+' ls2],zTime, zc(:,5), ['m*' ls2],zTime, zc(:,6), ['ks' ls2]);
-ax1 = [-1 91 -0.2 10];
+ax1 = [-1 92 -0.2 10];
 axis(ax1)
 xlabel('time [min]');
 ylabel('concentration [mol/l]')
 box('on');
+title('a)');
+
 hd = subplot(2,1,2);
 hold on
-hm1=plot(tk,zk(:,1),['b' lineStyle],tk,zk(:,2),['g' lineStyle],tk,zk(:,3),...
+hm=plot(tk,zk(:,1),['b' lineStyle],tk,zk(:,2),['g' lineStyle],tk,zk(:,3),...
     ['r' lineStyle],tk,zk(:,4),['c' lineStyle],tk,zk(:,5),['m' lineStyle],...
     tk,zk(:,6),['k' lineStyle]);
-set(hm1,'LineWidth',2);
-plot(zTime, zc(:,1), ['bd' ls2],zTime, zc(:,2), ['gx' ls2],zTime, zc(:,3), ['ro' ls2],...
+set(hm,'LineWidth',2);
+hp = plot(zTime, zc(:,1), ['bd' ls2],zTime, zc(:,2), ['gx' ls2],zTime, zc(:,3), ['ro' ls2],...
     zTime, zc(:,4), ['c+' ls2],zTime, zc(:,5), ['m*' ls2],zTime, zc(:,6), ['ks' ls2]);
-ax2 = [-1 91 -0.02 1.5];
+ax2 = [-1 92 -0.02 1.5];
 axis(ax2)
 xlabel('time [min]');
 ylabel('concentration [mol/l]')
 box('on');
+title('b)');
+hleg = legend(hp,'MeOH', 'GLY', 'TG', 'DG', 'MG', 'FAME');
+set(hleg,'Orientation','Horizontal');
+pos = get(hleg,'Position');
+pos(2) = 0.02;
+pos(1) = (1-pos(3))/2;
+set(hleg,'Position',pos);
 
-[xt1, yt1] = ds2nfu(ht1, [ax1(1) ax1(2)],[ax1(3) ax1(3)]);
-[xt2, yt2] = ds2nfu(hm1, [ax2(1) ax2(2)],[ax2(4) ax2(4)]);
-x1 = [xt1, NaN, xa1];
-x2 = [xt2, NaN, xa2];
-y1 = [yt1, NaN, ya1];
-y2 = [yt2, NaN, ya2];
+[x1, y1] = ds2nfu(hu, [ax1(1) ax1(2)],[ax1(3) ax1(3)]);
+[x2, y2] = ds2nfu(hd, [ax2(1) ax2(2)],[ax2(4) ax2(4)]);
 for i=1:numel(x1)
     h = annotation('line',[x1(i) x2(i)],[y1(i) y2(i)]);
     set(h,'LineStyle','--');
