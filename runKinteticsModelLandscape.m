@@ -1,4 +1,11 @@
-function runKinteticsModelLandscape(name, condition, p, q, lambda)
+function runKinteticsModelLandscape(name, condition, p, q, relativeLambda, nonregularizedErrors)
+if(relativeLambda == 0)
+    lambda = zeros(100,100); % 100 is greater than length of the landscape grid
+else
+    lambda = relativeLambda.*nonregularizedErrors;
+end
+
+
 % tmp = getExperimentalData();
 % data = tmp{5};
 load saveExperimentalData20120807
@@ -46,7 +53,7 @@ for i=1:length(spf)
         sumBackward = kBackward(i,j);
         %tic
         [K{i,j}, ErrLp(i,j), Flag{i,j}, Output{i,j}] = CalculateErrorsK...
-            (sumForward, sumBackward, z0, zml, zTime,p, q, type, lambda); 
+            (sumForward, sumBackward, z0, zml, zTime,p, q, type, [1 lambda(i,j)]); 
         %toc
         KProjected{i,j} = projectK(K{i,j}, sumForward, sumBackward);
     end
