@@ -17,10 +17,11 @@ end
 idxFwdBest = ri(idxBckBest);
 
 if (strcmp(plotType,'contourf'))
-    contourf(kF,kB,log(ErrLp),18);
+    contourf(kF,kB,log(1+ErrLp),18);
+    mean(mean(ErrLp))
     hl = line(kF,kB);
     set(hl,'LineStyle','none','Marker','.','Color','k');
-    xlabel('forward: k_1 + k_3 +k_5')
+    xlabel('forward: k_1 + k_3 + k_5')
     ylabel('backward: k_2 + k_4 + k_6')
     set(gca,'XScale','log','YScale','log');
     % title(['TG:MeOH = 1:' num2str(mData{condition}.TGMeOHRatio)...
@@ -42,7 +43,11 @@ elseif(strcmp(plotType,'plot'))
 %         ' Norm L' num2str(p)]);
     title([' Norm L' num2str(p)]);
     %ViewPlot.Save(no,['KineticModelFit' num2str(no)]);
-    axis([0 70 0 1.5])
+    if (zml(1,1)==13.058476552736959) % just a hack for preparing manuscript
+        axis([-1 70 -0.03 1.5]);
+    else
+        axis([-1 70 -0.05 2.5]);
+    end
 else
     warning('processLandscape:main','Unsupported plot type');
 end
