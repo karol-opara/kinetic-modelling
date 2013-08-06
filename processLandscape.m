@@ -1,4 +1,4 @@
-function processLandscape(path,plotType)
+function hLegend = processLandscape(path,plotType)
 load(path);
 
 [r, c] = size(K);
@@ -30,7 +30,7 @@ if (strcmp(plotType,'contourf'))
     
     K = getLitertureK();
     h = plotK(K,[1 1 1]);
-    
+    hLegend = NaN;
     hl = line(kF(idxFwdBest,idxBckBest), kB(idxFwdBest,idxBckBest));
     set(hl,'LineStyle','none','Marker','d','Color',[1 1 1]);
 elseif(strcmp(plotType,'plot'))
@@ -38,7 +38,7 @@ elseif(strcmp(plotType,'plot'))
     zml = data.zml;
     
     kij = KProjected{idxFwdBest,idxBckBest}
-    plotKineticModelFit(zTime,zml,KProjected{idxFwdBest,idxBckBest},data.z0ml,'batch');
+    [~,~,~,~,hLegend]=plotKineticModelFit(zTime,zml,KProjected{idxFwdBest,idxBckBest},data.z0ml,'batch');
 %     title(['k_f = ' num2str(sum(kij([1 3 5]))) ', k_b = ' num2str(sum(kij([2 4 6])))...
 %         ' Norm L' num2str(p)]);
     title([' Norm L' num2str(p)]);

@@ -1,4 +1,4 @@
-function [h,t,z,minus,l]=plotKineticModelFit(zTime,zml,k,z0,type,breakAxis,lineStyle)
+function [h,t,z,minus,hLegend]=plotKineticModelFit(zTime,zml,k,z0,type,breakAxis,lineStyle)
 % PLOTKINETICMODELFIT plots the results of fitting kinetics model
 % usage:
 % model = EstimateKineticModel();
@@ -29,7 +29,7 @@ for i=1:length(h)
 end
 xlabel('time [min]');
 %legend('MeOH', 'GLY', 'TG', 'DG', 'MG','FAME','Orientation','Horizontal')
-l = legend('MeOH', 'GLY', 'TG', 'DG', 'MG','FAME');
+hLegend = legend('MeOH', 'GLY', 'TG', 'DG', 'MG','FAME');
 xlabel('time [min]');
 ylabel('concentration [mol/l]')
 axis([-1 70.2 -0.2 Inf])

@@ -16,12 +16,12 @@ function processLandscapes2013()
 %     'Results/save_2013-07-15_224208_KineticsModelLandscape_condition_5_SRI_regularized01_L1_Qlog',...
 %     'Results/save_2013-07-16_101005_KineticsModelLandscape_condition_7_SRI_nonregularized_L1_Qlog',...
 %     'Results/save_2013-07-16_220230_KineticsModelLandscape_condition_7_SRI_regularized01_L1_Qlog'};
-% 
+%
 % l2nonregData = {'Results/save_2013-07-23_095951_KineticsModelLandscape_condition_5_OPP_nonregularized_L2_QNaN',...
 %     'Results/save_2013-07-23_232017_KineticsModelLandscape_condition_7_OPP_nonregularized_L2_QNaN',...
 %     'Results/save_2013-07-24_132350_KineticsModelLandscape_condition_5_OPP_nonregularized_L2_Qlog',...
 %     'Results/save_2013-07-25_033347_KineticsModelLandscape_condition_7_OPP_nonregularized_L2_Qlog'};
-% 
+%
 % l1nonregData = {'Results/save_2013-07-25_174438_KineticsModelLandscape_condition_5_OPP_nonregularized_L1_Qlog',...
 %     'Results/save_2013-07-26_080519_KineticsModelLandscape_condition_7_OPP_nonregularized_L1_Qlog',...
 %     'Results/save_2013-07-26_223843_KineticsModelLandscape_condition_5_OPP_nonregularized_Llog_QNaN',...
@@ -65,10 +65,10 @@ plotFourLandscapes(L2QLogData,titles,'plot');
 % plotFourLandscapes(goodDataFit,titles);
 % titles = {' poor data L1 log', ' poor data regularizes L1 log', ' good data L1 log', ' good data regularized L1 log'};
 % plotFourLandscapes(l1data,titles);
-% 
+%
 % titles={' poor L2 QNaN', ' good L2 QNaN', ' poor L2 QLog', ' good L2 QLog'};
 % plotFourLandscapes(l2nonregData,titles);
-% 
+%
 % titles={' poor L1 Qlog', ' good L1 Qlog', ' poor Llog QNaN', ' good Llog QNan'};
 % plotFourLandscapes(l1nonregData,titles);
 end
@@ -76,19 +76,29 @@ end
 function plotFourLandscapes(data,titles, type)
 nr = figure();
 subplot(2,2,1);
-processLandscape(data{1},type);
+hl = processLandscape(data{1},type);
+if(isnan(hl)==false), set(hl,'Visible','off'); end
 title(['a)' titles{1}]);
 subplot(2,2,2);
-processLandscape(data{2},type);
+hl = processLandscape(data{2},type);
+if(isnan(hl)==false), set(hl,'Visible','off'); end
 title(['b)' titles{2}]);
 subplot(2,2,3);
-processLandscape(data{3},type);
+hl = processLandscape(data{3},type);
+if(isnan(hl)==false), set(hl,'Visible','off'); end
 title(['c)' titles{3}]);
 subplot(2,2,4);
-processLandscape(data{4},type);
+hl = processLandscape(data{4},type);
+if(isnan(hl)==false)
+    set(hl,'Orientation','horizontal');
+    pos = get(hl,'Position');
+    pos(2) = 0.005;
+    pos(1) = (1-pos(3))/2;
+    set(hl,'Position',pos);
+end
 title(['d)' titles{4}]);
 
-set(nr,'Position',[100,100, 1000, 700']);
+set(nr,'Position',[100,100, 700, 700]);
 end
 
 function processLandscapes2012()
