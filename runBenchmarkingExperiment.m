@@ -8,7 +8,6 @@ if (nargin < 4)
     id = 'Oh';
     warning('runBenchmarkingExperiment:NoExperimentID','No experiment ID provided');
 end
-%rng('shuffle')
 
 % if (areTheseToolboxesInstalled({'MATLAB','Parallel Computing Toolbox'}))
 %     matlabpool(feature('numCores')-1);
@@ -24,6 +23,7 @@ function RunUniqunessExperimentRepetetiveFits(name, rndErr, sysErr, id,lambda, N
 savefilename = ['Results/' 'save_' datestr(now,'yyyy-mm-dd_HHMMSS') ...
     'BenchmarkingExperiment_' num2str(N) '_Repetetive_Fits_' num2str(lambda)...
     '_RelativeLambda_' name];
+savefilename(ismember(savefilename,' ,.:;!'))=[];
 
 %warning('runBenchmarkingExperiment:RunUniqunessExperimentRepetetiveFits','Only 10 repeats');
 pnorms = {'log', 0.5, 1, 2};
@@ -201,6 +201,8 @@ elseif (strcmp(id,'Noureddini'))
 end
 [t, z] = SolveKineticModel(z0ml,k);
 zKinetic = interp1(t,z,timeZ);
+
+%rng('shuffle');
 
 rnd = rndErr* sqrt(pi/2) * randn(length(timeZ),length(z0ml));
 zml = zKinetic+zKinetic.*rnd+repmat(sysErr,length(timeZ),1);
