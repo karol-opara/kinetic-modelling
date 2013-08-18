@@ -23,7 +23,7 @@ classdef Selection
             for i=2:popSize      % building "inverse cdf"
                 fx(i)=fx(i)+fx(i-1);
             end
-            ind = zeros(1,popSize);
+            ind = zeros(1,offspringNumber);
             for i=1:offspringNumber % proportional (roulette) succession
                 rnd=rand();
                 b=1;

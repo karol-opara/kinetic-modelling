@@ -23,7 +23,7 @@ classdef Mutation
             pop = pop + mvnrnd(mu, covMtx, popSize).';
         end % Gaussian
         
-        function ui = DERand1(pop, F)
+        function ui = DeRand1(pop, F)
             % DERAND1 conduct DE/rand/1 mutation on population pop with scaling
             % factor F
             [dim popSize] = size(pop);

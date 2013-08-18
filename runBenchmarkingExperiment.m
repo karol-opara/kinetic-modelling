@@ -1,4 +1,4 @@
-function runBenchmarkingExperiment(name, rndErr, sysErr, id, lambda, N)
+function runBenchmarkingExperiment(name, rndErr, sysErr, id, lambda, N, lambdas)
 
 if (nargin < 2)
     rndErr = 0.15;
@@ -15,11 +15,11 @@ end
 
 % RunUniqunessExperimentImportanceSampling(randErr, sysErr)
 
-RunUniqunessExperimentRepetetiveFits(name, rndErr, sysErr,id,lambda,N);
+RunUniqunessExperimentRepetetiveFits(name, rndErr, sysErr,id,lambda,N,lambdas);
 end
 
 
-function RunUniqunessExperimentRepetetiveFits(name, rndErr, sysErr, id,lambda, N)
+function RunUniqunessExperimentRepetetiveFits(name, rndErr, sysErr, id,lambda, N,lambdas)
 savefilename = ['Results/' 'save_' datestr(now,'yyyy-mm-dd_HHMMSS') ...
     'BenchmarkingExperiment_' num2str(N) '_Repetetive_Fits_' num2str(lambda)...
     '_RelativeLambda_' name];
@@ -39,6 +39,7 @@ data = dataN(1);
 for i = 1:plen
     %fprintf(['\n' num2str(rep) ': ']);
     for j = 1:qlen
+        lambda = [1 lambdas(i,j)];
         parfor rep = 1:N
             data = dataN(rep);
             p = pnorms{i};
