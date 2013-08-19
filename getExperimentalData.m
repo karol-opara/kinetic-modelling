@@ -1,10 +1,20 @@
-function data=getExperimentalData()
-%data = getBatchReactionData();
-[dataPermite, dataRetentate] = getMembraneReactionData();
+function [dataRetentate, dataPermeate]=getExperimentalData(type)
+if (nargin==0)
+    warning('getExperimentalData:NoType','No type provided, used batch as default');
+    type = 'batch';
+end
+if(strcmp(type,'batch'))
+    dataRetentate = getBatchReactionData();
+    dataPermeate=[];
+elseif (strcmp(type,'membrane'))
+    [dataPermeate, dataRetentate] = getMembraneReactionData();
+else
+    error('getExperimentalData:WrongType','Unsupported type')
+end
 end
 
-function [dataPermite, dataRetentate] = getMembraneReactionData()
-expDataP = readMembraneDataPermite();
+function [dataPermeate, dataRetentate] = getMembraneReactionData()
+expDataP = readMembraneDataPermeate();
 expDataR = readMembraneDataRetentate();
 %expData = expData([2,6,7,8,9,11,12,13]); % remove bad-looking data
 
@@ -12,11 +22,11 @@ wtpDataP = expData2wtp(expDataP);
 wtpzDataP = calculateZ(wtpDataP);
 mDataP = wtpData2mpml(wtpzDataP);
 %dataP = removeWrongPoints(mDataP);
-dataPermite = mDataP;
+dataPermeate = mDataP;
 close all
 %plotWtpData(data);
 %plotMpData(data);
-plotMlData(dataPermite, ' permite');
+plotMlData(dataPermeate, ' Permeate');
 
 
 
@@ -34,7 +44,7 @@ plotMlData(dataRetentate, ' retentate');
 
 end
 
-function expData = readMembraneDataPermite()
+function expData = readMembraneDataPermeate()
 table = xlsread('../Data calculation/2013-07-11_data_ppmwt_mr_permeate.xlsx');             %original data x,y in ppm,wt%
 noOfExperiments = 4;
 NaNLines = [1 9 15 25 35];
