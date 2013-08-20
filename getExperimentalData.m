@@ -96,7 +96,7 @@ mData = wtpData2mpml(wtpzData);
 data = mData;
 data = removeWrongPoints(mData);
 
-save saveExperimentalData20130319_8of13experiments_NRTLvalidation
+%save saveExperimentalData20130319_8of13experiments_NRTLvalidation
 
 %close all
 %plotWtpData(data);
@@ -116,7 +116,7 @@ mData{1} = removeSinglePoint(mData{1}, 6, 'z');
 data = mData;
 plotMlData(data);
 
-save('saveExperimentalData20130820_batch','data');
+%save('saveExperimentalData20130820_batch','data');
 end
 
 function expData = readData20130820()
