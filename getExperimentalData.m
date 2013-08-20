@@ -21,11 +21,11 @@ expDataR = readMembraneDataRetentate();
 wtpDataP = expData2wtp(expDataP);
 wtpzDataP = calculateZ(wtpDataP);
 mDataP = wtpData2mpml(wtpzDataP);
-%dataP = removeWrongPoints(mDataP);
 dataPermeate = mDataP;
 close all
 %plotWtpData(data);
 %plotMpData(data);
+dataPermeate = removeWrongMembranePoints(dataPermeate);
 plotMlData(dataPermeate, ' Permeate');
 
 
@@ -34,14 +34,40 @@ plotMlData(dataPermeate, ' Permeate');
 wtpDataR = expData2wtp(expDataR);
 wtpzDataR = calculateZ(wtpDataR);
 mDataR = wtpData2mpml(wtpzDataR);
-%dataR = removeWrongPoints(mDataR);
-dataRetentate = mDataP;
+dataRetentate = mDataR;
+dataRetentate = removeWrongMembranePoints(dataRetentate);
 plotMlData(dataRetentate, ' retentate');
 
 
 %save saveMembraneExperimentalData20130711
 
 
+end
+
+function data = removeWrongMembranePoints(data)
+data{1} = removeSinglePoint(data{1}, 3, 'x');
+data{1} = removeSinglePoint(data{1}, 3, 'y');
+data{1} = removeSinglePoint(data{1}, 3, 'z');
+
+%data{2} = removeSinglePoint(data{2}, 4, 'x');
+%data{2} = removeSinglePoint(data{2}, 4, 'y');
+%%data{2} = removeSinglePoint(data{2}, 4, 'z');
+
+data{2} = removeSinglePoint(data{2}, 1, 'x');
+data{2} = removeSinglePoint(data{2}, 1, 'y');
+data{2} = removeSinglePoint(data{2}, 1, 'z');
+
+data{3} = removeSinglePoint(data{3}, 8, 'x');
+data{3} = removeSinglePoint(data{3}, 8, 'y');
+data{3} = removeSinglePoint(data{3}, 8, 'z');
+
+data{4} = removeSinglePoint(data{4}, 7, 'x');
+data{4} = removeSinglePoint(data{4}, 7, 'y');
+data{4} = removeSinglePoint(data{4}, 7, 'z');
+
+data{4} = removeSinglePoint(data{4}, 6, 'x');
+data{4} = removeSinglePoint(data{4}, 6, 'y');
+data{4} = removeSinglePoint(data{4}, 6, 'z');
 end
 
 function expData = readMembraneDataPermeate()
@@ -57,7 +83,7 @@ for i = 1:noOfExperiments
         'yVolume', ex(:,11), 'yDensity', ex(:,12),...
         'x1wtp', ex(:,xOffset+5), 'x26ppm', ex(:,xOffset+(6:10)),...
         'xVolume', ex(:,xOffset+11), 'xDensity', ex(:,xOffset+12),...
-        'z0ml', table(NaNLines(i),23:28),...
+        'z0ml', NaN(1,6),...
         'reactorVolume',ex(:,22)*1e3);
     expData{i}.zVolume = expData{i}.xVolume + expData{i}.yVolume;
 end
@@ -263,7 +289,7 @@ figure()
 [hx, hy, hz] = plotConcentrations(mlData{i}.timeX, mlData{i}.xml,...
     mlData{i}.timeY, mlData{i}.yml, ...
     [0; mlData{i}.timeZ], [mlData{i}.z0ml; mlData{i}.zml]);
-mlData{i}.z0ml
+mlData{i}.z0ml;
 xlabel(hx,'time [min]');
 xlabel(hy,'time [min]');
 xlabel(hz,'time [min]');
