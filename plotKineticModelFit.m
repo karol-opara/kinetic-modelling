@@ -16,8 +16,13 @@ if (nargin < 6)
     breakAxis = false;
     lineStyle = '-';
 end
+if strcmp(type,'membrane')
+    timeSpan = [0 200];
+else
+    timeSpan = [0 100];
+end
 
-[t, z] = SolveKineticModel(z0,k,type);
+[t, z] = SolveKineticModel(z0,k,type,timeSpan);
 
 h=plot(zTime, zml(:,1), 'bd',zTime, zml(:,2), 'gx',zTime, zml(:,3), 'ro',...
     zTime, zml(:,4), 'c+',zTime, zml(:,5), 'm*',zTime, zml(:,6), 'ks',...
@@ -32,7 +37,7 @@ xlabel('time [min]');
 hLegend = legend('MeOH', 'GLY', 'TG', 'DG', 'MG','FAME');
 xlabel('time [min]');
 ylabel('concentration [mol/l]')
-axis([-1 70.2 -0.2 Inf])
+%axis([-1 70.2 -0.2 Inf])
 set(gca,'TickDir','out');
 drawnow;
 

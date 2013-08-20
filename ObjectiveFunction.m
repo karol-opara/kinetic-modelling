@@ -12,12 +12,11 @@ if nargin < 8
         'No Lagrange multipliers, using the default ones');
     lambda = [1 1e-2 1e-1 1 1e-1 1e-1];
 end
-%fprintf('.');
-% k= kz(1:6);
-% z0opt = zeros(6,1);
-% z0opt([1 3 4 5]) = kz(7:10);
+if strcmp(type,'membrane')
+    timeSpan = [0 200];
+end
 
-[t, z] = SolveKineticModel(z0opt,k,type);
+[t, z] = SolveKineticModel(z0opt,k,type,timeSpan);
 % HERE: compute fit error of the kinetic model based on experimental x's
 
 zKinetic = interp1(t,z,timeZ);
