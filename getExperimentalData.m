@@ -4,7 +4,8 @@ if (nargin==0)
     type = 'batch';
 end
 if(strcmp(type,'batch'))
-    dataRetentate = getBatchReactionData();
+    %dataRetentate = getBatchReactionData20130319();
+    dataRetentate = getBatchReactionData20130820();
     dataPermeate=[];
 elseif (strcmp(type,'membrane'))
     [dataPermeate, dataRetentate] = getMembraneReactionData();
@@ -83,8 +84,8 @@ end
 end
 
 
-function data = getBatchReactionData()
-expData = readData();
+function data = getBatchReactionData20130319()
+expData = readData20130319();
 
 expData = expData([2,6,7,8,9,11,12,13]); % remove bad-looking data
 
@@ -103,7 +104,41 @@ save saveExperimentalData20130319_8of13experiments_NRTLvalidation
 plotMlData(data);
 end
 
-function expData = readData()
+
+function data = getBatchReactionData20130820()
+expData = readData20130820();
+wtpData = expData2wtp(expData);
+wtpzData = calculateZ(wtpData);
+mData = wtpData2mpml(wtpzData);
+mData{1} = removeSinglePoint(mData{1}, 6, 'x');
+mData{1} = removeSinglePoint(mData{1}, 6, 'y');
+mData{1} = removeSinglePoint(mData{1}, 6, 'z');
+data = mData;
+plotMlData(data);
+
+save('saveExperimentalData20130820_batch','data');
+end
+
+function expData = readData20130820()
+table = xlsread('../Data calculation/2013-08-06_data_ppmwt.xlsx');             %original data x,y in ppm,wt%
+noOfExperiments = 7;
+NaNLines = [1 11 23 30 39 48 59 70];
+xOffset = 8;
+for i = 1:noOfExperiments
+    ex = table((1+NaNLines(i)):(NaNLines(i+1)-1),:);
+    expData{i} = struct('timeX', ex(:,1),'timeY', ex(:,1),'timeZ', ex(:,1),...
+        'temperature', ex(1,2), 'TGMeOHRatio', ex(1,3), 'NaOH', ex(1,4),...
+        'y1wtp', ex(:,5), 'y26ppm', ex(:,6:10),...
+        'yVolume', ex(:,11), 'yDensity', ex(:,12),...
+        'x1wtp', ex(:,xOffset+5), 'x26ppm', ex(:,xOffset+(6:10)),...
+        'xVolume', ex(:,xOffset+11), 'xDensity', ex(:,xOffset+12),...
+        'z0ml', table(NaNLines(i),23:28),...
+        'reactorVolume',ex(:,22)*1e3);
+    expData{i}.zVolume = expData{i}.xVolume + expData{i}.yVolume;
+end
+end
+
+function expData = readData20130319()
 table = xlsread('../Data calculation/2013-01-24_data_ppmwt.xlsx');             %original data x,y in ppm,wt%
 noOfExperiments = 13;
 NaNLines = [1 14 27 37 48 60 72 84 96 103 112 121 132 143];
