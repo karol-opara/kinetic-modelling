@@ -12,8 +12,11 @@ if nargin < 8
         'No Lagrange multipliers, using the default ones');
     lambda = [1 1e-2 1e-1 1 1e-1 1e-1];
 end
+
 if strcmp(type,'membrane')
     timeSpan = [0 200];
+else
+    timeSpan = [0 100];
 end
 
 [t, z] = SolveKineticModel(z0opt,k,type,timeSpan);
