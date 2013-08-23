@@ -1,4 +1,7 @@
-function err = ObjectiveFunction(k, zml, timeZ, z0opt,p,q,type, lambda)
+function err = ObjectiveFunction(k, zml, timeZ, z0opt,p,q,type, lambda, weights)
+if nargin < 9
+    weights = ones(1,6);
+end
 if nargin < 6
     q = 2;
     warning('ObjectiveFunction:NoOuterNorm',...
@@ -27,11 +30,14 @@ zKinetic = interp1(t,z,timeZ);
 
 %[zml, zKinetic] = studentizeData(zml, zKinetic);
 
+errorMatrix = zKinetic-zml;
+[r, c] = size(errorMatrix);
+errorMatrix = repmat(weights,r,1).*errorMatrix;
+
 if (isnan(q))
-    [r, c] = size(zKinetic);
-    fitErr = myNorm(reshape(zKinetic-zml,r*c,1),p);
+    fitErr = myNorm(reshape(errorMatrix,r*c,1),p);
 else
-    ferr = myNorm(zKinetic - zml,p);
+    ferr = myNorm(errorMatrix,p);
     fitErr = myNorm(ferr,q);
 end
 

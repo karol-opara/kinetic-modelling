@@ -4,6 +4,8 @@ load('saveExperimentalData20130820_batch');
 savefilename = ['Results/' 'save_KineticModel_Batch_' ...
     datestr(now,'yyyy-mm-dd_HHMMSS') '_' name];
 
+weights = [0 1 1 1 1 1];
+
 lambda=[0.01,0.03,0.05,0.08,0.1,0.3,0.7,1.5,2,0.005];
 model=cell(length(data),length(lambda));
 for id = 1:length(data)
@@ -18,7 +20,7 @@ for id = 1:length(data)
         
         options.MaxFunEvals = 1e5;
         
-        model{id,i} = EstimateKineticModel(data{id},p,q,'batch',Lambda,options);
+        model{id,i} = EstimateKineticModel(data{id},p,q,'batch',Lambda,options,weights);
         
         fprintf(['Iteration ' num2str(i) ', lambda = ' num2str(Lambda(2))]);
         model{id,i}.k

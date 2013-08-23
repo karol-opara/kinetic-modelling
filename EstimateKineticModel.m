@@ -1,4 +1,4 @@
-function model = EstimateKineticModel(data,p,q,type,lambda,options)
+function model = EstimateKineticModel(data,p,q,type,lambda,options,weights)
 if (nargin == 0)
     warning('EstimateKineticModel:NoInputArguments',...
         'No input arguments given, using the default ones')
@@ -21,6 +21,10 @@ end
 if (nargin<6)
     options = struct();
 end
+if (nargin<7)
+    weights = [1 1 1 1 1 1];
+    warning('EstimateKineticModel:NonuniformWeights',['No weights provided, using the default: ' num2str(weights)]);
+end
 %plotExprimentalData(data);
 
 z0 = data.z0ml([1 3 4 5]).'; % MeOH, TG, DG, MG
@@ -33,7 +37,7 @@ tic
 % [k, z0opt] = deRandInftyOptimization(length(k0), lBounds, uBounds,...
 %     data.zml, data.timeZ, data.z0ml,p,q);
 [k, z0opt, out] = cmaesOptimization(length(k0), lBounds, uBounds,...
-    data.zml, data.timeZ, data.z0ml,p,q,type,lambda,options);
+    data.zml, data.timeZ, data.z0ml,p,q,type,lambda,options,weights);
 % [k, z0opt, out] = fMinConOptimization(length(k0), lBounds, uBounds,...
 %     data.zml, data.timeZ, data.z0ml,p,q,type,lambda);
 time = toc();
@@ -58,7 +62,7 @@ opts.MinPopNorm = 1e-3;
 z0opt = z0ml;
 end
 
-function [k, z0opt, cmaesOut] = cmaesOptimization(dim, lBounds, uBounds, zml, timeZ, z0ml, p, q, type,lambda,options)
+function [k, z0opt, cmaesOut] = cmaesOptimization(dim, lBounds, uBounds, zml, timeZ, z0ml, p, q, type,lambda,options,weights)
 opts = cmaes('defaults');
 opts.MaxFunEvals = 1e4*dim;
 % warning('EstimateKineticModel:MaxFunEvals','Max fun evals set to low value -- use for debug only');
@@ -77,6 +81,6 @@ opts.LogFilenamePrefix = 0;
 opts.LogTime = 1;
 warning('off','cmaes:logging');
 opts.Restarts = 5;
-[k, ~, ~, ~, cmaesOut, ~]= cmaes('ObjectiveFunction', (lBounds+uBounds)/2, [], opts, zml, timeZ, z0ml, p, q, type,lambda);
+[k, ~, ~, ~, cmaesOut, ~]= cmaes('ObjectiveFunction', (lBounds+uBounds)/2, [], opts, zml, timeZ, z0ml, p, q, type,lambda,weights);
 z0opt = z0ml;
 end
