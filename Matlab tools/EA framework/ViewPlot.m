@@ -86,7 +86,7 @@ classdef ViewPlot
             export_fig([filename '.pdf']);
             eval(['print -dpng -r1200 ' filename '.png']);
             eval(['print ' filename '.fig']);
-            eval(['print ' filename ' -dmeta']);
+            eval(['print ' filename ' -dmeta -painters']);
         end
     end
 end
