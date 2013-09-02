@@ -6,33 +6,13 @@ good = processRunUniqunessExperimentRepetetiveFits();
 end
 
 function good = processRunUniqunessExperimentRepetetiveFits()
-% % 10 reps
-% %load('Results/save_ErrorNormSimulations_RepetetiveFits_2013-07-02_175030_IIASA_KO_random_05_sys_0_regularized_001_Nouredini_10rep'); % OK, 10% accuracy
-% %load('Results/save_ErrorNormSimulations_RepetetiveFits_2013-07-03_063951_IIASA_KO_random_05_sys_0_regularized_001_Jansri_10rep'); % poor results but only outer log may help
-% % load('Results/save_ErrorNormSimulations_RepetetiveFits_2013-07-03_102426_IIASA_PPO_random_05_sys_0_regularized_0001_Jansri_10rep'); % too poor regularization, no good results
-% % load('Results/save_ErrorNormSimulations_RepetetiveFits_2013-07-03_211010_IIASA_KO_random_05_sys_0_regularized_01_Jansri_10rep');
-% 
-% % 25 reps
-% %load('Results/save_ErrorNormSimulations_RepetetiveFits_2013-06-17_172155_IIASA_random_15_sys_0_regularized_001');
-% %load('Results/save_ErrorNormSimulations_RepetetiveFits_2013-06-17_151119_SRI_random_15_sys_3_regularized_001')
-% 
-% 
-% % 100 reps
-% %load('Results/save_ErrorNormSimulations_RepetetiveFits_2013-06-20_173831_SRI_random_15_sys_0_regularized_001')
-% %load('Results/save_ErrorNormSimulations_RepetetiveFits_2013-06-24_230921_SRI_random_15_sys_3_regularized_001')
-% %load('Results/save_ErrorNormSimulations_RepetetiveFits_2013-06-26_174839_IIASA_KO_random_05_sys_0_regularized_001')
-% 
-% 
-% % 100 reps with log regularization
-% %load('Results/save_ErrorNormSimulations_RepetetiveFits_2013-07-09_172446_IIASA_PPO_random_05_sys_0_regularized_01');
-
 %100 reps as in the paper draft
 load('Results\save_2013-08-10_125425BenchmarkingExperiment_100_Repetetive_Fits_RelativeLambda_nonregularized_Noureddini');
 load('Results\save_2013-08-06_171029BenchmarkingExperiment_100_Repetetive_Fits_RelativeLambda_regularized_Noureddini');
 %load('Results\save_2013-08-06_171301BenchmarkingExperiment_100_Repetetive_Fits_RelativeLambda_regularized_Jansri');
 load('Results\save_2013-08-12_085251BenchmarkingExperiment_100_Repetetive_Fits_RelativeLambda_nonregularized_Jansri');
-
-
+load('Results\save_2013-08-25_082739BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Noureddini_onlyRandomError_nonregularized');
+load('Results\save_2013-08-26_142908BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Jansri_onlyRandomError_nonregularized');
 
 lRelativeAccuracy = 0.5;
 uRelativeAccuracy = 1.5;
