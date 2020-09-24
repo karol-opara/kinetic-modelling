@@ -1,14 +1,20 @@
 function plotResultsKineticModels()
-%plotExampleModel()
+%plotExampleModel();
 %plotZoomedMolels();
 %plotTooFastReaction();
-plotBenchmarkExample();
+
+plotBenchmarkExample('Noureddini');
+plotBenchmarkExample('Jansri');
+
+
+%plotMotivatoryExample();
 end
 
-function plotBenchmarkExample
+function plotBenchmarkExample(id)
+% id = 'Jansri';
 rndErr = 0.05;
 sysErr = [1 0 0 0 0 0];
-id = 'Noureddini';
+
 
 
 zc=[];
@@ -23,8 +29,13 @@ end
 ii=1;
 lineStyle='-';
 ls2 = ':';
-clf
-hu = subplot(2,1,1);
+
+if strcmp(id, 'Jansri')
+    hu = subplot(2,2,2);
+else
+    hu = subplot(2,2,1);
+end
+
 hold on
 ht1=plot(tk,zk(:,1),['b' lineStyle],tk,zk(:,2),['g' lineStyle],tk,zk(:,3),...
     ['r' lineStyle],tk,zk(:,4),['c' lineStyle],tk,zk(:,5),['m' lineStyle],...
@@ -33,14 +44,22 @@ set(ht1,'LineWidth',2);
 zTime=repmat([data{ii}.timeZ NaN],1,N);
 plot(zTime, zc(:,1), ['bd' ls2],zTime, zc(:,2), ['gx' ls2],zTime, zc(:,3), ['ro' ls2],...
     zTime, zc(:,4), ['c+' ls2],zTime, zc(:,5), ['m*' ls2],zTime, zc(:,6), ['ks' ls2]);
-ax1 = [-1 92 -0.2 10];
+ax1 = [-0.5 20.5 -0.2 6];
 axis(ax1)
 xlabel('time [min]');
 ylabel('concentration [mol/l]')
 box('on');
-title('a)');
+if strcmp(id, 'Jansri')
+    title('c)');
+else
+    title('a)');
+end
 
-hd = subplot(2,1,2);
+if strcmp(id, 'Jansri')
+    hd = subplot(2,2,4);
+else
+    hd = subplot(2,2,3);
+end
 hold on
 hm=plot(tk,zk(:,1),['b' lineStyle],tk,zk(:,2),['g' lineStyle],tk,zk(:,3),...
     ['r' lineStyle],tk,zk(:,4),['c' lineStyle],tk,zk(:,5),['m' lineStyle],...
@@ -48,26 +67,39 @@ hm=plot(tk,zk(:,1),['b' lineStyle],tk,zk(:,2),['g' lineStyle],tk,zk(:,3),...
 set(hm,'LineWidth',2);
 hp = plot(zTime, zc(:,1), ['bd' ls2],zTime, zc(:,2), ['gx' ls2],zTime, zc(:,3), ['ro' ls2],...
     zTime, zc(:,4), ['c+' ls2],zTime, zc(:,5), ['m*' ls2],zTime, zc(:,6), ['ks' ls2]);
-ax2 = [-1 92 -0.02 1.5];
+if strcmp(id, 'Jansri')
+    ax2 = [-0.1 8 -0.02 3];
+else
+    ax2 = ax1;
+    ax2(4) = 2.5;
+end
+
 axis(ax2)
 xlabel('time [min]');
 ylabel('concentration [mol/l]')
 box('on');
-title('b)');
-hleg = legend(hp,'MeOH', 'GLY', 'TG', 'DG', 'MG', 'FAME');
-set(hleg,'Orientation','Horizontal');
-pos = get(hleg,'Position');
-pos(2) = 0.02;
-pos(1) = (1-pos(3))/2;
-set(hleg,'Position',pos);
+if strcmp(id, 'Jansri')
+    title('d)');
+else
+    title('b)');
+end
+if strcmp(id, 'Jansri')
+    hleg = legend(hp,'MeOH', 'GLY', 'TG', 'DG', 'MG', 'FAME');
+    set(hleg,'Orientation','Horizontal');
+    pos = get(hleg,'Position');
+    pos(2) = 0.001;
+    pos(1) = (1-pos(3))/2;
+    set(hleg,'Position',pos);
+end
 
-[x1, y1] = ds2nfu(hu, [ax1(1) ax1(2)],[ax1(3) ax1(3)]);
+[x1, y1] = ds2nfu(hu, [ax1(1) ax2(2)],[ax1(3) ax1(3)]);
 [x2, y2] = ds2nfu(hd, [ax2(1) ax2(2)],[ax2(4) ax2(4)]);
 for i=1:numel(x1)
     h = annotation('line',[x1(i) x2(i)],[y1(i) y2(i)]);
     set(h,'LineStyle','--');
 end
 
+set(gcf, 'Position', [994   146   900   648]);
 
 
     function data = CreateBenchmarkProblem20130723(rndErr, sysErr, id)
@@ -93,12 +125,24 @@ end
                 1.2280
                 0.2420
                 0.0070];
+        elseif (strcmp(id,'Klofutar'))
+            k = [0.0443
+                0.2334
+                0.0645
+                0.0699
+                0.2681
+                0.0047];
         else
             error('runBenchmarkingExperiment:WrongID','Wrong ID of the reaction rates');
         end
         
         conc = [6 0 1 0 0 0];
-        z0ml = 10 * conc/sum(conc);
+        
+        % warning('Total mole per litre setting changed')
+        % totalMolePerLitre = 10; % in simulations and initial submission
+        totalMolePerLitre = 0.789359594 + 0.057795443 + 0.003075868 + 0.003075868 + 5.002450688; % in revision
+        
+        z0ml = totalMolePerLitre * conc/sum(conc);
         if (strcmp(id,'Oh'))
             timeZ = [2     4     6     8    10    12    20    30    40    50    60];
         elseif(strcmp(id,'Jansri'))
@@ -159,15 +203,33 @@ end
 function plotExampleModel()
 load('Results/save_LowConcComparison_2013-07-05_121424_reg01')
 m = model{3,7};
-subplot(2,1,1)
+ht = subplot(2,1,1);
 plotKineticModelFit(m);
-axis([0 65 0 15]);
+ax1 = [-0.7 65 -0.1 15];
+axis(ax1);
 title('a)')
-subplot(2,1,2)
-plotKineticModelFit(m);
-axis([0 65 0 1.5]);
+legend('off')
+hb = subplot(2,1,2);
+[h,t,z,minus,hLegend] = plotKineticModelFit(m);
+ax2 = [-0.7 65 -0.01 1.5];
+axis(ax2);
 title('b)')
 set(gcf,'Position',[  9    49   467   919]);
+set(hLegend, 'Orientation', 'Horizontal');
+pos = get(hLegend,'Position');
+pos(2) = 0.01;
+pos(1) = (1-pos(3))/2;
+set(hLegend,'Position',pos);
+
+[x1, y1] = ds2nfu(ht, [ax1(1) ax1(2)],[ax1(3) ax2(3)]);
+[x2, y2] = ds2nfu(hb, [ax2(1) ax2(2)],[ax2(4) ax2(4)]);
+
+for i=1:numel(x1)
+    h = annotation('line',[x1(i) x2(i)],[y1(i) y2(i)]);
+    set(h,'LineStyle','--');
+end
+
+set(gcf, 'Position', [994   146   509   748])
 end
 
 function plotModelComparison(name,ax1,ax2,ax3,titleName)
@@ -184,7 +246,7 @@ set(hl,'Visible','off');
 axis(ax2);
 title('c)')
 ch = get(gcf,'Children');
-set(ch(length(ch)-1),'Orientation','horizontal');
+%set(ch(length(ch)-1),'Orientation','horizontal');
 
 hb1 = subplot(3,2,5);
 hl = plotComparison('2',name);
@@ -231,8 +293,10 @@ x2 = [x2, NaN, xt2, NaN, xa2];
 y1 = [y1, NaN, yt1, NaN, ya1];
 y2 = [y2, NaN, yt2, NaN, ya2];
 for i=1:numel(x1)
-    h = annotation('line',[x1(i) x2(i)],[y1(i) y2(i)]);
-    set(h,'LineStyle','--');
+    if (~any(isnan([x1(i) x2(i) y1(i) y2(i)])))
+        h = annotation('line',[x1(i) x2(i)],[y1(i) y2(i)]);
+        set(h,'LineStyle','--');
+    end
 end
 end
 
@@ -259,4 +323,32 @@ if(strcmp(which,'2'))
 elseif (strcmp(which,'2log'))
     [~, ~,~, ~,hl]=plotKineticModelFit(m2log);
 end
+end
+
+function plotMotivatoryExample()
+ax2 = getAxis(0.8);
+subplot(1,2,1)
+hl = plotComparison('2', 'PoorDataNoRegularization');
+set(hl,'Visible','off');
+axis(ax2);
+title('a)')
+gcapos = get(gca, 'Position');
+shift = 0.1;
+gcapos(2) = gcapos(2) + shift;
+gcapos(4) = gcapos(4) - shift;
+set(gca, 'Position', gcapos);
+subplot(1,2,2)
+hl = plotComparison('2log', 'PoorDataRegularization');
+axis(ax2);
+title('b)')
+gcapos = get(gca, 'Position');
+shift = 0.1;
+gcapos(2) = gcapos(2) + shift;
+gcapos(4) = gcapos(4) - shift;
+set(gca, 'Position', gcapos);
+set(hl,'Orientation','horizontal');
+pos = get(hl,'Position');
+pos(2) = 0.02;
+pos(1) = (1-pos(3))/2;
+set(hl,'Position',pos);
 end

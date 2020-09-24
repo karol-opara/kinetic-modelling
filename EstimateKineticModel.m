@@ -23,7 +23,7 @@ if (nargin<6)
 end
 if (nargin<7)
     weights = [1 1 1 1 1 1];
-    warning('EstimateKineticModel:NonuniformWeights',['No weights provided, using the default: ' num2str(weights)]);
+    %warning('EstimateKineticModel:NonuniformWeights',['No weights provided, using the default: ' num2str(weights)]);
 end
 %plotExprimentalData(data);
 

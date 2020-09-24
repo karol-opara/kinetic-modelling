@@ -1,5 +1,8 @@
-function hLegend = processLandscape(path,plotType)
+function hLegend = processLandscape(path,plotType,plotLegend)
 load(path);
+if nargin == 2
+    plotLegend = false;
+end
 
 [r, c] = size(K);
 for i = 1:r
@@ -17,7 +20,7 @@ end
 idxFwdBest = ri(idxBckBest);
 
 if (strcmp(plotType,'contourf'))
-    contourf(kF,kB,log(1+ErrLp),18);
+    [~, hc] = contourf(kF,kB,log(1+ErrLp),18);
     mean(mean(ErrLp))
     hl = line(kF,kB);
     set(hl,'LineStyle','none','Marker','.','Color','k');
@@ -30,9 +33,15 @@ if (strcmp(plotType,'contourf'))
     
     K = getLitertureK();
     h = plotK(K,[1 1 1]);
-    hLegend = NaN;
-    hl = line(kF(idxFwdBest,idxBckBest), kB(idxFwdBest,idxBckBest));
-    set(hl,'LineStyle','none','Marker','d','Color',[1 1 1]);
+    
+    hl2 = line(kF(idxFwdBest,idxBckBest), kB(idxFwdBest,idxBckBest));
+    set(hl2,'LineStyle','none','Marker','d','Color',[1 1 1]);
+    
+    if plotLegend
+        hLegend = legend([hc hl(1) hl2(1)], 'Fitness landscape', 'Evaluation grid', 'Literature data and ID');
+    else
+        hLegend = NaN;
+    end
 elseif(strcmp(plotType,'plot'))
     zTime = data.timeZ;
     zml = data.zml;

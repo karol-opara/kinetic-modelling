@@ -88,14 +88,14 @@ hl = processLandscape(data{3},type);
 if(isnan(hl)==false), set(hl,'Visible','off'); end
 title(['c)' titles{3}]);
 subplot(2,2,4);
-hl = processLandscape(data{4},type);
-if(isnan(hl)==false)
+hl = processLandscape(data{4},type, true);
+%if(isnan(hl)==false)
     set(hl,'Orientation','horizontal');
     pos = get(hl,'Position');
-    pos(2) = 0.005;
+    pos(2) = 0.001;
     pos(1) = (1-pos(3))/2;
     set(hl,'Position',pos);
-end
+%end
 title(['d)' titles{4}]);
 
 set(nr,'Position',[100,100, 700, 700]);
