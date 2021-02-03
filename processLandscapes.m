@@ -77,19 +77,19 @@ function plotFourLandscapes(data,titles, type)
 nr = figure();
 subplot(2,2,1);
 hl = processLandscape(data{1},type);
-if(isnan(hl)==false), set(hl,'Visible','off'); end
+if(isnan(double(hl))==false), set(hl,'Visible','off'); end
 title(['a)' titles{1}]);
 subplot(2,2,2);
 hl = processLandscape(data{2},type);
-if(isnan(hl)==false), set(hl,'Visible','off'); end
+if(isnan(double(hl))==false), set(hl,'Visible','off'); end
 title(['b)' titles{2}]);
 subplot(2,2,3);
 hl = processLandscape(data{3},type);
-if(isnan(hl)==false), set(hl,'Visible','off'); end
+if(isnan(double(hl))==false), set(hl,'Visible','off'); end
 title(['c)' titles{3}]);
 subplot(2,2,4);
 hl = processLandscape(data{4},type, true);
-%if(isnan(hl)==false)
+%if(isnan(double(hl))==false)
     set(hl,'Orientation','horizontal');
     pos = get(hl,'Position');
     pos(2) = 0.001;

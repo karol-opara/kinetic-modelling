@@ -79,23 +79,3 @@ dz(4) = k(1) * z(3) * z(1) - k(2) * z(4) * z(6) - k(3) * z(4) * z(1) + k(4) * z(
 dz(5) = k(3) * z(4) * z(1) - k(4) * z(5) * z(6) - k(5) * z(5) * z(1) + k(6) * z(2) * z(6);
 dz(6) = k(1) * z(3) * z(1) - k(2) * z(4) * z(6) + k(3) * z(4) * z(1) - k(4) * z(5) * z(6) + k(5) * z(5) * z(1) - k(6) * z(2) * z(6);
 end
-
-% function dz  = BatchKineticsModelMatrix(t,z,k)
-% % Equations from the kinetic model of reaction
-% 
-% K = [
-%     0
-%     0                                      k(6)
-%     -k(1) 
-%     -k(3)                                  k(2)
-%     -k(5)                                  k(4)
-%     0
-%     ];
-% 
-% dz = z.' * K * z;
-% 
-% dz2 = BatchKineticsModel(t,z,k);
-% dz - dz2
-% dz
-% 
-% end

@@ -1,4 +1,12 @@
-function runRegularizedBenchmarkingExperiment(name, dataset, useLambdas, useSystematicErr, useMinErr, N)
+function runRegularizedBenchmarkingExperiment(name, ... % experiment name (used for identification in output files only)
+    dataset,  ... % one of 'Oh' 'Jansri' 'Noureddini' 'Klofutar'
+    useLambdas,  ... % should regularization be used?
+    useSystematicErr,  ... % should systematic errors be simulated?
+    useMinErr, ... % should minimal error be simulated?
+    N) % number of runs
+if (nargin ~= 6)
+    error('Incorrect number of arguments given')
+end
 
 lambdas = getRegularizatonCoefficients();
 if (useLambdas)
@@ -6,13 +14,13 @@ if (useLambdas)
 else
     lambdas = lambdas*0;
     name = [name '_nonregularized'];
-end    
+end
 
 randomErr = 0.05;
 systematicErr = [0 0 0 0 0 0];
 
 if (useSystematicErr)
-	systematicErr = [1 0 0 0 0 0];
+    systematicErr = [1 0 0 0 0 0];
 end
 
 minErr = 0;

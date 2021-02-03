@@ -1,4 +1,7 @@
 function processRegularizationCoefficientChoice(name)
+if (nargin < 1)
+    error('Experiment name cannot be empty')
+end
 threshold = 1;
 [err, relErr, lambda2] = gerErrors(threshold);
 
