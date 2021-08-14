@@ -1,11 +1,11 @@
-function runBenchmarkingExperiment(name, rndErr, sysErr, minErr, id, lambda, N, lambdas)
+function runBenchmarkingExperiment(name, rndErr, sysErr, minErr, dataset, lambda, N, lambdas, compareOptimizers)
 
 if (nargin < 2)
     rndErr = 0.15;
     sysErr = [1 0 0 0 0 0];
 end
 if (nargin < 5)
-    id = 'Oh';
+    dataset = 'Oh';
     warning('runBenchmarkingExperiment:NoExperimentID','No experiment ID provided');
 end
 
@@ -14,8 +14,13 @@ end
 % end
 
 % RunUniqunessExperimentImportanceSampling(randErr, sysErr)
+if compareOptimizers
+    RunOptimizerComparison(name, rndErr, sysErr, minErr, dataset, N, lambdas);
+else
+    RunUniqunessExperimentRepetetiveFits(name, rndErr, sysErr, minErr, dataset,lambda,N,lambdas);
+end
 
-RunUniqunessExperimentRepetetiveFits(name, rndErr, sysErr, minErr, id,lambda,N,lambdas);
+
 end
 
 
@@ -45,7 +50,8 @@ for i = 1:plen
             p = pnorms{i};
             q = qnorms{j};
             
-            models{rep,i,j} = EstimateKineticModel(data,p,q,'batch',lambda*lossFunctionOrderMultiplier(i,j));
+            models{rep,i,j} = EstimateKineticModel(data,p,q,'batch',lambda*lossFunctionOrderMultiplier(i,j),...
+                struct(), 'cmaes');
             
             %         subplot(len,len,(i-1)*len+j);
             %         plotKineticModelFit(models{i,j}.data.timeZ,models{i,j}.data.zml,models{i,j}.k,models{i,j}.z0opt);
@@ -72,19 +78,19 @@ end
 % len = length(norms);
 % models = cell(len,len);
 % samples = cell(len,len);
-% 
+%
 % N = 1e2;
-% 
+%
 % data = CreateBenchmarkProblem(rndErr, sysErr, id);
 % for i = 1:len
 %     for j = 1:len
 %         p = norms(i);
 %         q = norms(j);
-%         
+%
 %         samples{i,j} = UniqunessOfKineticSolution(p,q,data,N);
 %         %models{i,j} = EstimateKineticModel(data,p,q);
 %         save(['saveTmpBenchmarkingExperiment_' name]);
-%         
+%
 %         %         subplot(len,len,(i-1)*len+j);
 %         %         plotKineticModelFit(models{i,j}.data.timeZ,models{i,j}.data.zml,models{i,j}.k,models{i,j}.z0opt);
 %         %         title(['L^p = ' num2str(p) ', L^q = ' num2str(q)]);
@@ -115,30 +121,30 @@ end
 %     8.790E-02	4.777E-01	1.555E-01	1.396E-01	7.478E-01	6.100E-03
 %     1.057E-02	0.000E+00	1.184E-01	8.187E-02	1.310E-01	2.010E-03
 %     ];
-% 
+%
 % kMean = 1*mean(kExperimental);
-% 
+%
 % k = NaN(2*N,6);
 % logW = NaN(2*N,1);
 % i = 0;
 % iter = 0;
-% 
+%
 % for i = 1:(10*N)
 %     kRnd=exprnd(rand()*kMean).';
 %     logQ(i) = sum(log(kRnd)) - (1./kMean) * kRnd; % logarithm of proposal density
 %     err = ObjectiveFunction(kRnd, data.zml, data.timeZ, data.z0ml,p,q);
 %     logAP(i) = log(1/err); % logarithm of an unnormalized true density
-%     
+%
 %     logW(i) = (logAP(i) - logQ(i));
 %     k(i,:) = kRnd;
 % end
-% 
+%
 % w = exp(logW);
 % w = w/sum(w);
-% 
+%
 % ind = randp(w,N,1);
 % sample = k(ind,:);
-% 
+%
 % figure()
 % set(gcf,'Position',[100 100 1000 450]);
 % subplot(1,2,1)
@@ -149,7 +155,7 @@ end
 % axis([-Inf Inf 0 1]);
 % xlabel('Observation index');
 % ylabel('CDF of weights');
-% 
+%
 % subplot(1,2,2)
 % epsilon = 1e-1*(rand(N,2)-0.5);
 % plot(sum(k(:,[1 3 5]).').',sum(k(:,[2 4 6]).').','g.',...
@@ -202,7 +208,7 @@ conc = [6 0 1 0 0 0];
 
 % totalMolePerLitre = 10; % in simulations and initial submission
 totalMolePerLitre = 0.789359594 + 0.057795443 + 0.003075868 + 0.003075868 + 5.002450688; % in revision
-        
+
 z0ml = totalMolePerLitre * conc/sum(conc);
 if (strcmp(id,'Oh'))
     timeZ = [2     4     6     8    10    12    20    30    40    50    60];
@@ -224,3 +230,54 @@ zml = zKinetic+zKinetic.*rnd+repmat(sysErr,length(timeZ),1);
 data = struct('k',k,'z0ml',z0ml,'timeZ',timeZ,'zml',zml,'zKinetic',zKinetic);
 
 end
+
+function RunOptimizerComparison(name, rndErr, sysErr, minErr, id, N,lambdas)
+savefilename = ['Results/' 'save_' datestr(now,'yyyy-mm-dd_HHMMSS') ...
+    'OptimizationComparison_' num2str(N) '_RepetetiveFits_' ...
+    name '_minErr_' num2str(minErr)];
+savefilename(ismember(savefilename,' ,.:;!'))=[];
+
+%warning('runBenchmarkingExperiment:RunUniqunessExperimentRepetetiveFits','Only 10 repeats');
+pnorms = {'rel', 2, 2};
+qnorms = {NaN, NaN, 'log'};
+optimizers = {'fmincon', 'cmaes', 'derandinfty'};
+%warning('runBenchmarkingExperiment:RunUniqunessExperimentRepetetiveFits','Only NaN norms tried');
+plen = length(pnorms);
+qlen = length(qnorms);
+olen = length(optimizers);
+models = cell(N,plen,plen);
+for i = 1:N
+    dataN(i) = CreateBenchmarkProblem(rndErr, sysErr, minErr, id);
+end
+data = dataN(1);
+for i = 1:plen
+    %fprintf(['\n' num2str(rep) ': ']);
+    lambda = [1 0];
+    if(strcmp(qnorms{i},'log'))
+        lambda = [1 lambdas(4,2)] * lossFunctionOrderMultiplier(4,2);
+    end
+    for j = 1:olen
+        optimizer = optimizers{j};
+        for rep = 1:N
+            %parfor rep = 1:N
+            data = dataN(rep);
+            p = pnorms{i};
+            q = qnorms{i};
+            options = struct();
+            
+            models{rep,i,j} = EstimateKineticModel(data,p,q,'batch',...
+                lambda, options, optimizer);
+            
+            %         subplot(len,len,(i-1)*len+j);
+            %         plotKineticModelFit(models{i,j}.data.timeZ,models{i,j}.data.zml,models{i,j}.k,models{i,j}.z0opt);
+            %         title(['L^p = ' num2str(p) ', L^q = ' num2str(q)]);
+            %         drawnow;
+        end
+        fprintf('.');
+        save([savefilename '_partial']);
+    end
+end
+save(savefilename);
+disp(['Saved as ' savefilename])
+end
+

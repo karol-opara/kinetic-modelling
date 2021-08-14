@@ -1,4 +1,4 @@
-function model = EstimateKineticModel(data,p,q,type,lambda,options,weights)
+function model = EstimateKineticModel(data,p,q,type,lambda,options, optimizer, weights)
 if (nargin == 0)
     warning('EstimateKineticModel:NoInputArguments',...
         'No input arguments given, using the default ones')
@@ -22,6 +22,9 @@ if (nargin<6)
     options = struct();
 end
 if (nargin<7)
+        optimizer = 'cmaes';
+end
+if (nargin<8)
     weights = [1 1 1 1 1 1];
     %warning('EstimateKineticModel:NonuniformWeights',['No weights provided, using the default: ' num2str(weights)]);
 end
@@ -34,40 +37,56 @@ lBounds = [1e-8*ones(1,6)].';%, 5,  0.2, 1e-6, 1e-6].';
 uBounds = [4.0E+00	2.7E+01	5.5E+01	6.6E+01	2.4E+00	1.8E-01].'; % the maximum from other papers
 
 tic
-% [k, z0opt] = deRandInftyOptimization(length(k0), lBounds, uBounds,...
-%     data.zml, data.timeZ, data.z0ml,p,q);
-[k, z0opt, out] = cmaesOptimization(length(k0), lBounds, uBounds,...
-    data.zml, data.timeZ, data.z0ml,p,q,type,lambda,options,weights);
-% [k, z0opt, out] = fMinConOptimization(length(k0), lBounds, uBounds,...
-%     data.zml, data.timeZ, data.z0ml,p,q,type,lambda);
-time = toc();
-
-model = struct('data', data, 'k', k, 'z0opt', z0opt, 'type', type, 'executionTime',toc, 'optimizerOutput', out);
+switch optimizer
+    case 'fmincon'
+        [k, z0opt, out] = fMinConOptimization(length(k0), lBounds, uBounds,...
+            data.zml, data.timeZ, data.z0ml,p,q,type,lambda);
+    case 'cmaes'
+        [k, z0opt, out] = cmaesOptimization(length(k0), lBounds, uBounds,...
+            data.zml, data.timeZ, data.z0ml,p,q,type,lambda,options,weights);
+    case 'derandinfty'
+        [k, z0opt, out] = deRandInftyOptimization(length(k0), lBounds, uBounds,...
+            data.zml, data.timeZ, data.z0ml,p,q,type,lambda,options,weights);
+    otherwise
+        warning('EstimateKineticModel:EstimateKineticModel',...
+            ['Unsupported optimizer type: ' optimizer]);
 end
 
-function [k, z0opt, fMinConOut] = fMinConOptimization(~, lBounds, uBounds, zml, timeZ, z0ml, p, q, type,lambda)
+time = toc();
+
+model = struct('data', data, 'k', k, 'z0opt', z0opt, 'type', type,...
+    'executionTime',toc, 'optimizerOutput', out);
+end
+
+function [k, z0opt, fMinConOut] = fMinConOptimization(dim, lBounds, uBounds, zml, timeZ, z0ml, p, q, type,lambda)
 options=optimset('fmincon');
 options.Algorithm = 'active-set';
+options.MaxFunctionEvaluations = 1e4*dim;
+
+% warning('EstimateKineticModel:MaxFunEvals','Max fun evals set to low value -- use for debug only');
+% options.MaxFunctionEvaluations = 1e1*dim;
+
 [k,~,~,fMinConOut] = fmincon('ObjectiveFunction',z0ml,[],[],[],[],lBounds,uBounds,[],options,zml, timeZ, z0ml, p, q, type,lambda);
 z0opt= z0ml;
 end
 
-function [k, z0opt] = deRandInftyOptimization(dim, lBounds, uBounds, zml, timeZ, z0ml, p, q, type)
+function [k, z0opt, out] = deRandInftyOptimization(dim, lBounds, uBounds, zml, timeZ, z0ml, p, q, type,lambda,options,weights)
 opts.Dim = dim;
-%warning('EstimateKineticModel:MaxFunEvals','Max fun evals set to very low value -- use for debug only');
 opts.MaxFunEvals = 1e4*dim;
 opts.PopSize = 5*dim;
 opts.MinPopNorm = 1e-3;
-[k, ~]= DeRandInfty('ObjectiveFunction', [], lBounds, uBounds, opts, zml, timeZ, z0ml, p, q,type);
+
+% warning('EstimateKineticModel:MaxFunEvals','Max fun evals set to low value -- use for debug only');
+% opts.MaxFunEvals = 1e1*dim;
+
+[k, ~, ~, out]= DeRandInfty('ObjectiveFunction', [], lBounds, uBounds, opts, zml, timeZ, z0ml, p, q,type,lambda,weights);
 z0opt = z0ml;
 end
 
 function [k, z0opt, cmaesOut] = cmaesOptimization(dim, lBounds, uBounds, zml, timeZ, z0ml, p, q, type,lambda,options,weights)
 opts = cmaes('defaults');
 opts.MaxFunEvals = 1e4*dim;
-% warning('EstimateKineticModel:MaxFunEvals','Max fun evals set to low value -- use for debug only');
-% opts.MaxFunEvals = 1e1*dim;
-if(isempty(fieldnames(options))==false) % i.e. ther is options structure provided by user
+if(isempty(fieldnames(options))==false) % i.e. there is the 'options' structure provided by user
     opts.MaxFunEvals = options.MaxFunEvals;
 end
 opts.MaxIter = Inf;
@@ -81,6 +100,10 @@ opts.LogFilenamePrefix = 0;
 opts.LogTime = 1;
 warning('off','cmaes:logging');
 opts.Restarts = 5;
+
+% warning('EstimateKineticModel:MaxFunEvals','Max fun evals set to low value -- use for debug only');
+% opts.MaxFunEvals = 1e1*dim;
+
 [k, ~, ~, ~, cmaesOut, ~]= cmaes('ObjectiveFunction', (lBounds+uBounds)/2, [], opts, zml, timeZ, z0ml, p, q, type,lambda,weights);
 z0opt = z0ml;
 end

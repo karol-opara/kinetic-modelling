@@ -3,8 +3,9 @@ function runRegularizedBenchmarkingExperiment(name, ... % experiment name (used 
     useLambdas,  ... % should regularization be used?
     useSystematicErr,  ... % should systematic errors be simulated?
     useMinErr, ... % should minimal error be simulated?
-    N) % number of runs
-if (nargin ~= 6)
+    N,... % number of runs
+    compareOptimizers) % if true we compare different optimizers if false different loss function variants
+if (nargin ~= 7)
     error('Incorrect number of arguments given')
 end
 
@@ -28,7 +29,7 @@ if (useMinErr)
     minErr = 0.01;
 end
 
-runBenchmarkingExperiment(name, randomErr, systematicErr, minErr, dataset, NaN, N, lambdas);
+runBenchmarkingExperiment(name, randomErr, systematicErr, minErr, dataset, NaN, N, lambdas, compareOptimizers);
 end
 
 function lambdas = getRegularizatonCoefficients()

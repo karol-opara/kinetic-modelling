@@ -11,7 +11,7 @@ if nargin < 6
         'Using default value type=''batch'' for the outer norm');
 end
 if nargin < 8
-       warning('ObjectiveFunction:NoLagrangeMultipliers',...
+    warning('ObjectiveFunction:NoLagrangeMultipliers',...
         'No Lagrange multipliers, using the default ones');
     lambda = [1 1e-2 1e-1 1 1e-1 1e-1];
 end
@@ -35,7 +35,12 @@ errorMatrix = zKinetic-zml;
 errorMatrix = repmat(weights,r,1).*errorMatrix;
 
 if (isnan(q))
-    fitErr = myNorm(reshape(errorMatrix,r*c,1),p);
+    if(ischar(p) && strcmp(p,'rel'))
+        relativeErrorMatrix = abs(zKinetic-zml)./zml;
+        fitErr = sum(reshape(relativeErrorMatrix,r*c,1));
+    else
+        fitErr = myNorm(reshape(errorMatrix,r*c,1),p);
+    end
 else
     ferr = myNorm(errorMatrix,p);
     fitErr = myNorm(ferr,q);
@@ -43,8 +48,8 @@ end
 
 % we want to minimize: fit error and fit in constraints
 err = lambda(1)*fitErr +... % fit error
-      lambda(2)*norm(k,2);%+... % reaction rates should not be too large
-    %lambda(2)*log1p(var(sum(zKinetic.'))) + ... % the total number of moles should not much (if volume is constant)
+    lambda(2)*norm(k,2);%+... % reaction rates should not be too large
+%lambda(2)*log1p(var(sum(zKinetic.'))) + ... % the total number of moles should not much (if volume is constant)
 %     lambda(3)*log1p(sum(sum(abs(z.').*(z.'<0)))) +... % concentrations must be nonnegative
 %     lambda(4)*log1p(sum(abs(k)))+... % reaction rates should not be too large
 %     lambda(5)*log1p(sum(1./(1e-4+k))); % we do not want trivial solution k1=k2=...=k6=0
@@ -64,7 +69,7 @@ if (ischar(p))
         error('ObjectiveFunction:myNorm','Inappropriate norm specified');
     end
 else
-   y = (sum(abs(x).^p)).^(1/p); 
+    y = (sum(abs(x).^p)).^(1/p);
 end
 end
 
