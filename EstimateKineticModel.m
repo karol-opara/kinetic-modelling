@@ -38,6 +38,9 @@ uBounds = [4.0E+00	2.7E+01	5.5E+01	6.6E+01	2.4E+00	1.8E-01].'; % the maximum fro
 
 tic
 switch optimizer
+    case 'madDE'
+        [k, z0opt, out] = madDeOptimization(length(k0), lBounds, uBounds,...
+            data.zml, data.timeZ, data.z0ml,p,q,type,lambda,options,weights);
     case 'fmincon'
         [k, z0opt, out] = fMinConOptimization(length(k0), lBounds, uBounds,...
             data.zml, data.timeZ, data.z0ml,p,q,type,lambda);
@@ -80,6 +83,21 @@ opts.MinPopNorm = 1e-3;
 % opts.MaxFunEvals = 1e1*dim;
 
 [k, ~, ~, out]= DeRandInfty('ObjectiveFunction', [], lBounds, uBounds, opts, zml, timeZ, z0ml, p, q,type,lambda,weights);
+z0opt = z0ml;
+end
+
+function [k, z0opt, out] = madDeOptimization(dim, lBounds, uBounds, zml, timeZ, z0ml, p, q, type,lambda,options,weights)
+opts.Dim = dim;
+opts.MaxFunEvals = 1e4*dim;
+opts.PopSize = 5*dim;
+opts.MinPopNorm = 1e-3;
+
+% warning('EstimateKineticModel:MaxFunEvals','Max fun evals set to low value -- use for debug only');
+% opts.MaxFunEvals = 1e1*dim;
+
+out=NaN;
+optimizerMadDE('ObjectiveFunction', dim, opts.MaxFunEvals, lBounds, uBounds, zml, timeZ, z0ml, p, q,type,lambda,weights);
+[k, ~]= optimizerMadDE('ObjectiveFunction', dim, opts.MaxFunEvals, lBounds, uBounds, zml, timeZ, z0ml, p, q,type,lambda,weights);
 z0opt = z0ml;
 end
 

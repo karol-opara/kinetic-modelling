@@ -233,19 +233,20 @@ end
 
 function RunOptimizerComparison(name, rndErr, sysErr, minErr, id, N,lambdas)
 savefilename = ['Results/' 'save_' datestr(now,'yyyy-mm-dd_HHMMSS') ...
-    'OptimizationComparison_' num2str(N) '_RepetetiveFits_' ...
+    '_OptimizationComparison_' num2str(N) '_RepetetiveFits_' ...
     name '_minErr_' num2str(minErr)];
 savefilename(ismember(savefilename,' ,.:;!'))=[];
 
 %warning('runBenchmarkingExperiment:RunUniqunessExperimentRepetetiveFits','Only 10 repeats');
 pnorms = {'rel', 2, 2};
 qnorms = {NaN, NaN, 'log'};
-optimizers = {'fmincon', 'cmaes', 'derandinfty'};
+pqnames = {'Relative', 'Square', 'Regularized log-square'};
+optimizers = {'madDE', 'fmincon', 'cmaes', 'derandinfty'};
 %warning('runBenchmarkingExperiment:RunUniqunessExperimentRepetetiveFits','Only NaN norms tried');
 plen = length(pnorms);
 qlen = length(qnorms);
 olen = length(optimizers);
-models = cell(N,plen,plen);
+models = cell(N,olen,plen);
 for i = 1:N
     dataN(i) = CreateBenchmarkProblem(rndErr, sysErr, minErr, id);
 end
@@ -258,8 +259,8 @@ for i = 1:plen
     end
     for j = 1:olen
         optimizer = optimizers{j};
-        for rep = 1:N
-            %parfor rep = 1:N
+        parfor rep = 1:N
+        % for rep = 1:N
             data = dataN(rep);
             p = pnorms{i};
             q = qnorms{i};
