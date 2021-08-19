@@ -233,7 +233,7 @@ end
 
 function RunOptimizerComparison(name, rndErr, sysErr, minErr, id, N,lambdas)
 savefilename = ['Results/' 'save_' datestr(now,'yyyy-mm-dd_HHMMSS') ...
-    '_OptimizationComparison_' num2str(N) '_RepetetiveFits_' ...
+    '_OptimizationComparison_' id, '_', num2str(N) '_RepetetiveFits_' ...
     name '_minErr_' num2str(minErr)];
 savefilename(ismember(savefilename,' ,.:;!'))=[];
 
@@ -241,7 +241,7 @@ savefilename(ismember(savefilename,' ,.:;!'))=[];
 pnorms = {'rel', 2, 2};
 qnorms = {NaN, NaN, 'log'};
 pqnames = {'Relative', 'Square', 'Regularized log-square'};
-optimizers = {'madDE', 'fmincon', 'cmaes', 'derandinfty'};
+optimizers = {'apgskimode', 'madDE', 'fmincon', 'cmaes', 'derandinfty'};
 %warning('runBenchmarkingExperiment:RunUniqunessExperimentRepetetiveFits','Only NaN norms tried');
 plen = length(pnorms);
 qlen = length(qnorms);
@@ -260,14 +260,21 @@ for i = 1:plen
     for j = 1:olen
         optimizer = optimizers{j};
         parfor rep = 1:N
-        % for rep = 1:N
+            % for rep = 1:N
             data = dataN(rep);
             p = pnorms{i};
             q = qnorms{i};
             options = struct();
             
+            %try
             models{rep,i,j} = EstimateKineticModel(data,p,q,'batch',...
                 lambda, options, optimizer);
+            try
+                
+            catch
+                warning('Problem using function.  Assigning a value of NaN.');
+                models{rep,i,j} = NaN;
+            end
             
             %         subplot(len,len,(i-1)*len+j);
             %         plotKineticModelFit(models{i,j}.data.timeZ,models{i,j}.data.zml,models{i,j}.k,models{i,j}.z0opt);

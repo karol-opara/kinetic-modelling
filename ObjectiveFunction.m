@@ -36,7 +36,7 @@ errorMatrix = repmat(weights,r,1).*errorMatrix;
 
 if (isnan(q))
     if(ischar(p) && strcmp(p,'rel'))
-        relativeErrorMatrix = abs(zKinetic-zml)./zml;
+        relativeErrorMatrix = abs(zKinetic-zml)./(zml+1e-8);
         fitErr = sum(reshape(relativeErrorMatrix,r*c,1));
     else
         fitErr = myNorm(reshape(errorMatrix,r*c,1),p);

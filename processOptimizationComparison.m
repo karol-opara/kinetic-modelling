@@ -175,7 +175,8 @@ col = num2str(round(col));
 end
 
 function [good, allResults] = processFiles()
-savefilenames = {'Results\save_2021-08-15_112810OptimizationComparison_100_RepetetiveFits_test_nonregularized_minErr_001.mat'};
+savefilenames = {'Results/save_2021-08-18_201142_OptimizationComparison_30_RepetetiveFits_4-optimizers_nonregularized_minErr_001.mat',...
+    'Results/save_2021-08-19_043100_OptimizationComparison_30_RepetetiveFits_4-optimizers_nonregularized_minErr_001.mat'};% {'Results\save_2021-08-15_112810OptimizationComparison_100_RepetetiveFits_test_nonregularized_minErr_001.mat'};
 
 if false == exist('pqnames')
     pqnames = {'Relative', 'Square', 'Regularized log-square'};
@@ -215,18 +216,18 @@ for indFile = 1:length(savefilenames)
     end
     
     
-    kVal = cell(3,3);
-    for i = 1:olen
-        for j = 1:plen
+    kVal = cell(plen,olen);
+    for j = 1:plen
+        for i = 1:olen
             mtr = NaN(rep,6);
             for (r = 1:rep)
-                if isempty(models{r,i,j})
+                if isempty(models{r,j,i})
                     mtr(r,:) = NaN(1,6);
                 else
                     mtr(r,:) = models{r,j,i}.k.';
                 end
             end
-            kVal{i,j}= mtr;
+            kVal{j,i}= mtr;
         end
     end
     good=NaN;
@@ -242,9 +243,7 @@ for indFile = 1:length(savefilenames)
             kf = sum(kVal{i,j}(:,[1 3 5]).').';
             kb = sum(kVal{i,j}(:,[2 4 6]).').';
             
-            
-            
-            
+
             [r, ~] = size(kVal{i,j});
             isGood = all(kVal{i,j}>repmat(data.k.'*lRelativeAccuracy,r,1),2) & ...
                 all(kVal{i,j}<repmat(data.k.'*uRelativeAccuracy,r,1),2);
@@ -253,7 +252,8 @@ for indFile = 1:length(savefilenames)
             good(i,j) = round(100*numel(kc)/numel(kVal{i,j}));
             
             if(plotting)
-                        subplot(plen,olen,plen*(i-1)+j)
+                disp(['Number ', num2str(olen*(i-1)+j)])
+                        subplot(plen,olen,olen*(i-1)+j)
                         h = plot(kf,kb,'go',sum(data.k([1,3,5])),sum(data.k([2,4,6])),'*');
                         set(gca,'xScale','log','yScale','log');
                         axis([1e-2 1e3 1e-2 1e3]);

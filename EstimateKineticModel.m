@@ -50,6 +50,9 @@ switch optimizer
     case 'derandinfty'
         [k, z0opt, out] = deRandInftyOptimization(length(k0), lBounds, uBounds,...
             data.zml, data.timeZ, data.z0ml,p,q,type,lambda,options,weights);
+    case 'apgskimode'
+        [k, z0opt, out] = apgskimodeOptimization(length(k0), lBounds, uBounds,...
+            data.zml, data.timeZ, data.z0ml,p,q,type,lambda,options,weights);
     otherwise
         warning('EstimateKineticModel:EstimateKineticModel',...
             ['Unsupported optimizer type: ' optimizer]);
@@ -83,6 +86,19 @@ opts.MinPopNorm = 1e-3;
 % opts.MaxFunEvals = 1e1*dim;
 
 [k, ~, ~, out]= DeRandInfty('ObjectiveFunction', [], lBounds, uBounds, opts, zml, timeZ, z0ml, p, q,type,lambda,weights);
+z0opt = z0ml;
+end
+
+function [k, z0opt, out] = apgskimodeOptimization(dim, lBounds, uBounds, zml, timeZ, z0ml, p, q, type,lambda,options,weights)
+opts.Dim = dim;
+opts.MaxFunEvals = 1e4*dim;
+opts.PopSize = 5*dim;
+opts.MinPopNorm = 1e-3;
+
+% warning('EstimateKineticModel:MaxFunEvals','Max fun evals set to low value -- use for debug only');
+% opts.MaxFunEvals = 1e1*dim;
+
+[k,Best_fit,All_fit,nfes,out]= optimizerAPGSK_IMODE('ObjectiveFunction', dim, opts.MaxFunEvals, lBounds, uBounds, zml, timeZ, z0ml, p, q,type,lambda,weights);
 z0opt = z0ml;
 end
 
