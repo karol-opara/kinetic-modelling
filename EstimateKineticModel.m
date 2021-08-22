@@ -22,7 +22,7 @@ if (nargin<6)
     options = struct();
 end
 if (nargin<7)
-        optimizer = 'cmaes';
+    optimizer = 'cmaes';
 end
 if (nargin<8)
     weights = [1 1 1 1 1 1];
@@ -52,6 +52,12 @@ switch optimizer
             data.zml, data.timeZ, data.z0ml,p,q,type,lambda,options,weights);
     case 'apgskimode'
         [k, z0opt, out] = apgskimodeOptimization(length(k0), lBounds, uBounds,...
+            data.zml, data.timeZ, data.z0ml,p,q,type,lambda,options,weights);
+    case 'somat3a'
+        [k, z0opt, out] = somat3aOptimization(length(k0), lBounds, uBounds,...
+            data.zml, data.timeZ, data.z0ml,p,q,type,lambda,options,weights);
+    case 'ampso'
+        [k, z0opt, out] = ampsoOptimization(length(k0), lBounds, uBounds,...
             data.zml, data.timeZ, data.z0ml,p,q,type,lambda,options,weights);
     otherwise
         warning('EstimateKineticModel:EstimateKineticModel',...
@@ -89,6 +95,27 @@ opts.MinPopNorm = 1e-3;
 z0opt = z0ml;
 end
 
+function [k, z0opt, out] = somat3aOptimization(dim, lBounds, uBounds, zml, timeZ, z0ml, p, q, type,lambda,options,weights)
+SOMApara.PopSize    = 1500;
+SOMApara.N_jump     = 100;
+SOMApara.m     		= 5;
+SOMApara.n     		= 4;
+SOMApara.k     		= 5;
+Info.f_star         = 1.000000000;
+Info.the_func       = 'ObjectiveFunction';
+Info.FEs_Max        = 1e4*dim;
+Info.dimension      = 6;
+Info.Search_Range   = [-8192, 8192];
+
+% warning('EstimateKineticModel:MaxFunEvals','Max fun evals set to low value -- use for debug only');
+% opts.MaxFunEvals = 1e1*dim;
+
+out=NaN;
+[Best , array_digit , FEs , Mig] = optimizerSOMA_T3A(Info, SOMApara, 'ObjectiveFunction', lBounds, uBounds, zml, timeZ, z0ml, p, q,type,lambda,weights);
+k = Best.Positon.';
+z0opt = z0ml;
+end
+
 function [k, z0opt, out] = apgskimodeOptimization(dim, lBounds, uBounds, zml, timeZ, z0ml, p, q, type,lambda,options,weights)
 opts.Dim = dim;
 opts.MaxFunEvals = 1e4*dim;
@@ -112,8 +139,19 @@ opts.MinPopNorm = 1e-3;
 % opts.MaxFunEvals = 1e1*dim;
 
 out=NaN;
-optimizerMadDE('ObjectiveFunction', dim, opts.MaxFunEvals, lBounds, uBounds, zml, timeZ, z0ml, p, q,type,lambda,weights);
 [k, ~]= optimizerMadDE('ObjectiveFunction', dim, opts.MaxFunEvals, lBounds, uBounds, zml, timeZ, z0ml, p, q,type,lambda,weights);
+z0opt = z0ml;
+end
+
+function [k, z0opt, out] = ampsoOptimization(dim, lBounds, uBounds, zml, timeZ, z0ml, p, q, type,lambda,options,weights)
+opts.Dim = dim;
+opts.MaxFunEvals = 1e4*dim;
+opts.PopSize = 5*dim;
+opts.MinPopNorm = 1e-3;
+
+% warning('EstimateKineticModel:MaxFunEvals','Max fun evals set to low value -- use for debug only');
+% opts.MaxFunEvals = 1e1*dim;
+[k, best_fit, out] = optimizerAMPSO('ObjectiveFunction', opts.Dim, lBounds, uBounds, opts.MaxFunEvals,  zml, timeZ, z0ml, p, q, type, lambda, weights);
 z0opt = z0ml;
 end
 

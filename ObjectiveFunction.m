@@ -36,7 +36,7 @@ errorMatrix = repmat(weights,r,1).*errorMatrix;
 
 if (isnan(q))
     if(ischar(p) && strcmp(p,'rel'))
-        relativeErrorMatrix = abs(zKinetic-zml)./(zml+1e-8);
+        relativeErrorMatrix = abs(zKinetic-zml)./max(zml,1e-8); % we are replacing zeros with a small constant 1e-8 to enable division
         fitErr = sum(reshape(relativeErrorMatrix,r*c,1));
     else
         fitErr = myNorm(reshape(errorMatrix,r*c,1),p);

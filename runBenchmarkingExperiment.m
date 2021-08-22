@@ -241,7 +241,7 @@ savefilename(ismember(savefilename,' ,.:;!'))=[];
 pnorms = {'rel', 2, 2};
 qnorms = {NaN, NaN, 'log'};
 pqnames = {'Relative', 'Square', 'Regularized log-square'};
-optimizers = {'apgskimode', 'madDE', 'fmincon', 'cmaes', 'derandinfty'};
+optimizers = {'ampso', 'somat3a', 'apgskimode', 'madDE', 'fmincon', 'cmaes', 'derandinfty'};
 %warning('runBenchmarkingExperiment:RunUniqunessExperimentRepetetiveFits','Only NaN norms tried');
 plen = length(pnorms);
 qlen = length(qnorms);
@@ -252,6 +252,7 @@ for i = 1:N
 end
 data = dataN(1);
 for i = 1:plen
+    disp(pqnames{i});
     %fprintf(['\n' num2str(rep) ': ']);
     lambda = [1 0];
     if(strcmp(qnorms{i},'log'))
@@ -259,6 +260,7 @@ for i = 1:plen
     end
     for j = 1:olen
         optimizer = optimizers{j};
+        disp(optimizer);
         parfor rep = 1:N
             % for rep = 1:N
             data = dataN(rep);
