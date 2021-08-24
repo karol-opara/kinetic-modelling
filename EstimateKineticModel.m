@@ -84,6 +84,7 @@ end
 
 function [k, z0opt, out] = deRandInftyOptimization(dim, lBounds, uBounds, zml, timeZ, z0ml, p, q, type,lambda,options,weights)
 opts.Dim = dim;
+opts.Disp = 'off';
 opts.MaxFunEvals = 1e4*dim;
 opts.PopSize = 5*dim;
 opts.MinPopNorm = 1e-3;
@@ -91,7 +92,7 @@ opts.MinPopNorm = 1e-3;
 % warning('EstimateKineticModel:MaxFunEvals','Max fun evals set to low value -- use for debug only');
 % opts.MaxFunEvals = 1e1*dim;
 
-[k, ~, ~, out]= DeRandInfty('ObjectiveFunction', [], lBounds, uBounds, opts, zml, timeZ, z0ml, p, q,type,lambda,weights);
+[k, ~, ~, out]= optimizerDeRandInfty('ObjectiveFunction', [], lBounds, uBounds, opts, zml, timeZ, z0ml, p, q,type,lambda,weights);
 z0opt = z0ml;
 end
 
@@ -156,7 +157,7 @@ z0opt = z0ml;
 end
 
 function [k, z0opt, cmaesOut] = cmaesOptimization(dim, lBounds, uBounds, zml, timeZ, z0ml, p, q, type,lambda,options,weights)
-opts = cmaes('defaults');
+opts = optimizerCMAES('defaults');
 opts.MaxFunEvals = 1e4*dim;
 if(isempty(fieldnames(options))==false) % i.e. there is the 'options' structure provided by user
     opts.MaxFunEvals = options.MaxFunEvals;
@@ -176,6 +177,6 @@ opts.Restarts = 5;
 % warning('EstimateKineticModel:MaxFunEvals','Max fun evals set to low value -- use for debug only');
 % opts.MaxFunEvals = 1e1*dim;
 
-[k, ~, ~, ~, cmaesOut, ~]= cmaes('ObjectiveFunction', (lBounds+uBounds)/2, [], opts, zml, timeZ, z0ml, p, q, type,lambda,weights);
+[k, ~, ~, ~, cmaesOut, ~]= optimizerCMAES('ObjectiveFunction', (lBounds+uBounds)/2, [], opts, zml, timeZ, z0ml, p, q, type,lambda,weights);
 z0opt = z0ml;
 end
