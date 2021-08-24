@@ -1,6 +1,15 @@
 function processOptimizationComparison
 
-[good, allResults] = processFiles();
+% savefilenames ={'Results/save_2021-08-22_185826_OptimizationComparison_Noureddini_8_RepetetiveFits_7-optimizers_nonregularized_minErr_001.mat',...
+%     'Results/save_2021-08-22_214839_OptimizationComparison_Klofutar_8_RepetetiveFits_7-optimizers_nonregularized_minErr_001.mat',...
+%     'Results/save_2021-08-23_003836_OptimizationComparison_Jansri_8_RepetetiveFits_7-optimizers_nonregularized_minErr_001.mat'};
+
+savefilenames ={'Results/save_2021-08-23_115132_OptimizationComparison_Jansri_4_RepetetiveFits_3-optimizers-largerMinErr_nonregularized_minErr_01.mat',...
+    'Results/save_2021-08-23_112514_OptimizationComparison_Klofutar_4_RepetetiveFits_3-optimizers-largerMinErr_nonregularized_minErr_01.mat',...
+    'Results/save_2021-08-23_110024_OptimizationComparison_Noureddini_4_RepetetiveFits_3-optimizers-largerMinErr_nonregularized_minErr_01.mat'};
+
+
+[good, allResults] = processFiles(savefilenames);
 % processUniqunessExperimentImportanceSampling()
 
 % processed_all_results = processAllResults(allResults);
@@ -174,9 +183,8 @@ col(col>95) = -900 + 10 * col(col>95);
 col = num2str(round(col));
 end
 
-function [good, allResults] = processFiles()
-savefilenames = {'Results/save_2021-08-18_201142_OptimizationComparison_30_RepetetiveFits_4-optimizers_nonregularized_minErr_001.mat',...
-    'Results/save_2021-08-19_043100_OptimizationComparison_30_RepetetiveFits_4-optimizers_nonregularized_minErr_001.mat'};% {'Results\save_2021-08-15_112810OptimizationComparison_100_RepetetiveFits_test_nonregularized_minErr_001.mat'};
+function [good, allResults] = processFiles(savefilenames)
+
 
 if false == exist('pqnames')
     pqnames = {'Relative', 'Square', 'Regularized log-square'};
@@ -252,16 +260,16 @@ for indFile = 1:length(savefilenames)
             good(i,j) = round(100*numel(kc)/numel(kVal{i,j}));
             
             if(plotting)
-                disp(['Number ', num2str(olen*(i-1)+j)])
-                        subplot(plen,olen,olen*(i-1)+j)
-                        h = plot(kf,kb,'go',sum(data.k([1,3,5])),sum(data.k([2,4,6])),'*');
-                        set(gca,'xScale','log','yScale','log');
-                        axis([1e-2 1e3 1e-2 1e3]);
-                        xlabel('k_f = k_1 + k_3 +k_5')
-                        ylabel('k_b = k_2 + k_4 +k_6')
-                        hl = line(sum(kc(:,[1 3 5]).').',sum(kc(:,[2 4 6]).').');
-                        set(hl,'color','r','marker','o','linestyle','none');
-                        title([pqnames{i} ' ' optimizers{j}]);
+                % disp(['Number ', num2str(olen*(i-1)+j)])
+                subplot(plen,olen,olen*(i-1)+j)
+                h = plot(kf,kb,'go',sum(data.k([1,3,5])),sum(data.k([2,4,6])),'*');
+                set(gca,'xScale','log','yScale','log');
+                axis([1e-2 1e3 1e-2 1e3]);
+                xlabel('k_f = k_1 + k_3 +k_5')
+                ylabel('k_b = k_2 + k_4 +k_6')
+                hl = line(sum(kc(:,[1 3 5]).').',sum(kc(:,[2 4 6]).').');
+                set(hl,'color','r','marker','o','linestyle','none');
+                title([pqnames{i} ' ' optimizers{j}]);
             end
             
             kActualMatrix = repmat(data.k.', size(kVal{i,j}, 1),1);
