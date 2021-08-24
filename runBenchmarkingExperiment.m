@@ -241,7 +241,7 @@ savefilename(ismember(savefilename,' ,.:;!'))=[];
 pnorms = {'rel', 2, 2};
 qnorms = {NaN, NaN, 'log'};
 pqnames = {'Relative', 'Square', 'Regularized log-square'};
-optimizers = {'ampso', 'somat3a', 'apgskimode', 'madDE', 'fmincon', 'cmaes', 'derandinfty'};
+optimizers = {'derandinfty', 'cmaes', 'ampso', 'somat3a', 'apgskimode', 'madDE', 'fmincon'};
 %warning('runBenchmarkingExperiment:RunUniqunessExperimentRepetetiveFits','Only NaN norms tried');
 plen = length(pnorms);
 qlen = length(qnorms);
