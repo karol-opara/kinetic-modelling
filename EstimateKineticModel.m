@@ -137,10 +137,11 @@ opts.PopSize = 5*dim;
 opts.MinPopNorm = 1e-3;
 
 % warning('EstimateKineticModel:MaxFunEvals','Max fun evals set to low value -- use for debug only');
-% opts.MaxFunEvals = 1e1*dim;
+% opts.MaxFunEvals = 1e2*dim;
 
-out=NaN;
-[k, ~]= optimizerMadDE('ObjectiveFunction', dim, opts.MaxFunEvals, lBounds, uBounds, zml, timeZ, z0ml, p, q,type,lambda,weights);
+out=struct();
+[k, best_val]= optimizerMadDE('ObjectiveFunction', dim, opts.MaxFunEvals, lBounds, uBounds, zml, timeZ, z0ml, p, q,type,lambda,weights);
+out.best_val = best_val;
 z0opt = z0ml;
 end
 

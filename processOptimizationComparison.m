@@ -4,9 +4,11 @@ function processOptimizationComparison
 %     'Results/save_2021-08-22_214839_OptimizationComparison_Klofutar_8_RepetetiveFits_7-optimizers_nonregularized_minErr_001.mat',...
 %     'Results/save_2021-08-23_003836_OptimizationComparison_Jansri_8_RepetetiveFits_7-optimizers_nonregularized_minErr_001.mat'};
 
-savefilenames ={'Results/save_2021-08-23_115132_OptimizationComparison_Jansri_4_RepetetiveFits_3-optimizers-largerMinErr_nonregularized_minErr_01.mat',...
+savefilenames = {'Results/save_2021-08-23_115132_OptimizationComparison_Jansri_4_RepetetiveFits_3-optimizers-largerMinErr_nonregularized_minErr_01.mat',...
     'Results/save_2021-08-23_112514_OptimizationComparison_Klofutar_4_RepetetiveFits_3-optimizers-largerMinErr_nonregularized_minErr_01.mat',...
     'Results/save_2021-08-23_110024_OptimizationComparison_Noureddini_4_RepetetiveFits_3-optimizers-largerMinErr_nonregularized_minErr_01.mat'};
+
+savefilenames = {'Results/save_2021-08-24_141714_OptimizationComparison_Noureddini_12_RepetetiveFits_7-optimizers-largerMinErr_nonregularized_minErr_001.mat'};
 
 
 [good, allResults] = processFiles(savefilenames);
@@ -297,7 +299,7 @@ for indFile = 1:length(savefilenames)
                 xlabel('Index i')
                 ylabel('Rate constant k_i')
                 title([pqnames{i} ' ' optimizers{j} ...
-                    ', ||k*-k|| = ', sprintf('%1.1f', kEuclideanMean(i,j)), ' ± ', sprintf('%1.1f', kEuclideanStd(i,j))]);
+                    ', ||k*-k|| = ', sprintf('%1.1f', kEuclideanMean(i,j)), ' ï¿½ ', sprintf('%1.1f', kEuclideanStd(i,j))]);
             end
             if(j == 1)
                 if(good(i,1) >= good(1,bestIdOneStep(1)))

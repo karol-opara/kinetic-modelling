@@ -41,27 +41,54 @@ for i = 1:N
     dataN(i) = CreateBenchmarkProblem(rndErr, sysErr, minErr, id);
 end
 data = dataN(1);
+
+% For better parallelization we flatten three nested loops into a single
+% one by (1) obtaining all the indices, (2) running computations in a
+% flattened loop, (3) rewriting results to the original data structure
+k = 1;
+ijrep = [];
 for i = 1:plen
-    %fprintf(['\n' num2str(rep) ': ']);
     for j = 1:qlen
-        lambda = [1 lambdas(i,j)];
-        parfor rep = 1:N
-            data = dataN(rep);
-            p = pnorms{i};
-            q = qnorms{j};
-            
-            models{rep,i,j} = EstimateKineticModel(data,p,q,'batch',lambda*lossFunctionOrderMultiplier(i,j),...
-                struct(), 'cmaes');
-            
-            %         subplot(len,len,(i-1)*len+j);
-            %         plotKineticModelFit(models{i,j}.data.timeZ,models{i,j}.data.zml,models{i,j}.k,models{i,j}.z0opt);
-            %         title(['L^p = ' num2str(p) ', L^q = ' num2str(q)]);
-            %         drawnow;
+        for rep = 1:N
+            ijrep = [ijrep; i j rep k];
+            k = k+1;
         end
-        fprintf('.');
-        save([savefilename '_partial']);
     end
 end
+
+k = 1;
+parfor k = 1:(plen * qlen *N)
+    i = ijrep(k, 1);
+    j = ijrep(k, 2);
+    rep = ijrep(k, 3);
+    
+    if (any(any(isnan(lambdas))))
+        lambda_reg = [1, lambda*lossFunctionOrderMultiplier(i,j)];
+    else
+        lambda_reg = [1, lambdas(i,j)*lossFunctionOrderMultiplier(i,j)];
+    end
+    data = dataN(rep);
+    p = pnorms{i};
+    q = qnorms{j};
+    
+    mk{k} = EstimateKineticModel(data,p,q,'batch',lambda_reg,...
+        struct(), 'madDE');
+    
+    fprintf('.');
+    % save([savefilename '_partial']);
+end
+
+k = 1;
+ijrep = [];
+for i = 1:plen
+    for j = 1:qlen
+        for rep = 1:N
+            models{rep,i,j} = mk{k};
+            k = k+1;
+        end
+    end
+end
+
 save(savefilename);
 disp(['Saved as ' savefilename])
 end
