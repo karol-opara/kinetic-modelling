@@ -94,9 +94,28 @@ disp(['Saved as ' savefilename])
 end
 
 function lossMult = lossFunctionOrderMultiplier(i,j)
-load('Results/save_RegularizationCoefficients_2013-07-23_092626_1e5Dim_LBFGS_PoorData_NonregularizedErrors');
-lossMult = errMin(i,j);
+%load('Results/save_RegularizationCoefficients_2013-07-23_092626_1e5Dim_LBFGS_PoorData_NonregularizedErrors');
+%warning('Loading old multipliers');
+
+errMins = NaN(4,5);
+
+% Load the files and compute average min errror
+for ii = 1:12
+    fn = ['Regularization/',...
+        'save_RegularizationCoefficients_2021-08-29_235841_relativeLambdaMultipleRuns_NonregularizedErrors_run_', ...
+        num2str(ii), '.mat'];
+    load(fn, 'errMin')
+    %errMin = loadErrMin(fn);
+    if ii == 1
+        errMins = errMin;
+    else
+        errMins = (ii-1)/ii * errMins + 1/ii * errMin; % computing arithmetic mean for streaming data
+    end
 end
+
+lossMult = errMins(i,j);
+end
+
 
 % function RunUniqunessExperimentImportanceSampling(rndErr, sysErr, name)
 % savefilename = ['Results/' 'save_BenchmarkingExperiment_ImportanceSamping_' ...
