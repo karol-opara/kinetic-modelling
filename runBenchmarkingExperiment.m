@@ -314,13 +314,11 @@ for i = 1:plen
             q = qnorms{i};
             options = struct();
             
-            %try
-            models{rep,i,j} = EstimateKineticModel(data,p,q,'batch',...
-                lambda, options, optimizer);
             try
-                
+            models{rep,i,j} = EstimateKineticModel(data,p,q,'batch',...
+                lambda, options, optimizer);        
             catch
-                warning('Problem using function.  Assigning a value of NaN.');
+                warning('runBenchmarkingExperiment:Problem using function.  Assigning a value of NaN.');
                 models{rep,i,j} = NaN;
             end
             

@@ -1,4 +1,8 @@
 function runRegularizationCoefficientChoice(name)
+if (~ ischar(name))
+   error('Name must be a charater vector'); 
+end
+
 loadData = false;
 optimization = false;
 
@@ -8,8 +12,8 @@ goodData = data{2};
 %plotConcentrations(poorData.timeX, poorData.xml,poorData.timeY, poorData.yml,poorData.timeZ, poorData.zml, '-');
 %plotConcentrations(goodData.timeX, goodData.xml,goodData.timeY,goodData.yml,goodData.timeZ, goodData.zml, '-');
 
-savefilename = strjoin(['Results/' 'save_RegularizationCoefficients_' ...
-    datestr(now,'yyyy-mm-dd_HHMMSS') '_' name], '');
+savefilename = ['Results/' 'save_RegularizationCoefficients_' ...
+    datestr(now,'yyyy-mm-dd_HHMMSS') '_' name];
 lambdaZero = [1, 0];
 
 type = 'batch';
@@ -66,12 +70,12 @@ end
 
 
 fprintf('Iterating over relative lambdas\n');
-relativeLambdas = [1 0.5 0.2 0.1 0.05 0.02 0.01]; % [0.7 0.07] [2 5] [7 10]
+relativeLambdas = [10 7 5 2 1 0.7 0.5 0.2 0.1 0.07 0.05 0.02 0.01];
 for i = 1:length(relativeLambdas)
     lambda = [1 relativeLambdas(i)];
     runBenchmarkingExperiment('RegularizationCoefficientChoice', ...
         0.05, [1 0 0 0 0 0], 0.01, 'Oh', lambda, 12, NaN, false);
-    save(strjoin([savefilename '_partial'], ''));
+    save([savefilename '_partial']);
     fprintf('.');
 end
 

@@ -35,7 +35,8 @@ runBenchmarkingExperiment(name, randomErr, systematicErr, minErr, dataset, NaN, 
 end
 
 function lambdas = getRegularizatonCoefficients(wd)
-load([wd '/Results/save_RegularizationCoefficientChoice_2013-08-06_162711_14runsOhsData.mat'])
+%load([wd '/Results/save_RegularizationCoefficientChoice_2013-08-06_162711_14runsOhsData.mat'])
+load([wd '/Regularization/save_RegularizationCoefficientChoice_2021-09-02_135505_relativeLambdaM.mat'], 'bestLambda')
 lambdas = bestLambda;
 end
 
