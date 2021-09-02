@@ -74,6 +74,7 @@ function [k, z0opt, fMinConOut] = fMinConOptimization(dim, lBounds, uBounds, zml
 options=optimset('fmincon');
 options.Algorithm = 'active-set';
 options.MaxFunctionEvaluations = 1e4*dim;
+options.Display = 'off';
 
 % warning('EstimateKineticModel:MaxFunEvals','Max fun evals set to low value -- use for debug only');
 % options.MaxFunctionEvaluations = 1e1*dim;
