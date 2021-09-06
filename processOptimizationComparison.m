@@ -4,12 +4,9 @@ function processOptimizationComparison
 %     'Results/save_2021-08-22_214839_OptimizationComparison_Klofutar_8_RepetetiveFits_7-optimizers_nonregularized_minErr_001.mat',...
 %     'Results/save_2021-08-23_003836_OptimizationComparison_Jansri_8_RepetetiveFits_7-optimizers_nonregularized_minErr_001.mat'};
 
-savefilenames = {'Results/save_2021-08-23_115132_OptimizationComparison_Jansri_4_RepetetiveFits_3-optimizers-largerMinErr_nonregularized_minErr_01.mat',...
-    'Results/save_2021-08-23_112514_OptimizationComparison_Klofutar_4_RepetetiveFits_3-optimizers-largerMinErr_nonregularized_minErr_01.mat',...
-    'Results/save_2021-08-23_110024_OptimizationComparison_Noureddini_4_RepetetiveFits_3-optimizers-largerMinErr_nonregularized_minErr_01.mat'};
-
-savefilenames = {'Results/save_2021-08-24_141714_OptimizationComparison_Noureddini_12_RepetetiveFits_7-optimizers-largerMinErr_nonregularized_minErr_001.mat'};
-
+savefilenames = {'Regularization/save_2021-09-03_114156_OptimizationComparison_Noureddini_8_RepetetiveFits_compareOptimizersLambdaM_regularized_minErr_001.mat',...
+    'Regularization/save_2021-09-04_002314_OptimizationComparison_Jansri_8_RepetetiveFits_compareOptimizersLambdaM_regularized_minErr_001.mat',...
+    'Regularization/save_2021-09-04_182444_OptimizationComparison_Klofutar_8_RepetetiveFits_compareOptimizersLambdaM_regularized_minErr_001.mat'};
 
 [good, allResults] = processFiles(savefilenames);
 % processUniqunessExperimentImportanceSampling()
@@ -253,6 +250,7 @@ for indFile = 1:length(savefilenames)
             kf = sum(kVal{i,j}(:,[1 3 5]).').';
             kb = sum(kVal{i,j}(:,[2 4 6]).').';
             
+            data.k = dataN(1).k;
 
             [r, ~] = size(kVal{i,j});
             isGood = all(kVal{i,j}>repmat(data.k.'*lRelativeAccuracy,r,1),2) & ...

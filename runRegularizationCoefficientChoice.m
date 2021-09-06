@@ -70,7 +70,7 @@ end
 
 
 fprintf('Iterating over relative lambdas\n');
-relativeLambdas = [10 7 5 2 1 0.7 0.5 0.2 0.1 0.07 0.05 0.02 0.01];
+relativeLambdas = [1 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.25 0.2 0.15 0.1 0.07 0.05 0.02 0.01];
 for i = 1:length(relativeLambdas)
     lambda = [1 relativeLambdas(i)];
     runBenchmarkingExperiment('RegularizationCoefficientChoice', ...
