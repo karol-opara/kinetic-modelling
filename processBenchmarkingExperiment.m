@@ -354,7 +354,7 @@ for indFile = 1:length(savefilenames)
                 xlabel('Index i')
                 ylabel('Rate constant k_i')
                 title(['p = ' num2str(pnorms{i}) ', q = ' num2str(qnorms{j}),... % ', good = ', num2str(good(i,j)) '%']);
-                    ', ||k*-k|| = ', sprintf('%1.1f', kEuclideanMean(i,j)), ' ± ', sprintf('%1.1f', kEuclideanStd(i,j))]);
+                    ', ||k*-k|| = ', sprintf('%1.1f', kEuclideanMean(i,j)), ' ï¿½ ', sprintf('%1.1f', kEuclideanStd(i,j))]);
             end
             if(j == 1)
                 if(good(i,1) >= good(1,bestIdOneStep(1)))
