@@ -17,14 +17,14 @@ end
 if compareOptimizers
     RunOptimizerComparison(name, rndErr, sysErr, minErr, dataset, N, lambdas);
 else
-    RunUniqunessExperimentRepetetiveFits(name, rndErr, sysErr, minErr, dataset,lambda,N,lambdas);
+    RunExperimentRepetetiveFits(name, rndErr, sysErr, minErr, dataset,lambda,N,lambdas);
 end
 
 
 end
 
 
-function RunUniqunessExperimentRepetetiveFits(name, rndErr, sysErr, minErr, id,lambda, N,lambdas)
+function RunExperimentRepetetiveFits(name, rndErr, sysErr, minErr, id,lambda, N,lambdas)
 savefilename = ['Results/' 'save_' datestr(now,'yyyy-mm-dd_HHMMSS') ...
     'BenchmarkingExperiment_' num2str(N) '_Repetetive_Fits_' num2str(lambda)...
     '_RelativeLambda_' name '_minErr_' num2str(minErr)];
@@ -65,10 +65,11 @@ parfor k = 1:(plen * qlen *N)
     j = ijrep(k, 2);
     rep = ijrep(k, 3);
     
+    [~, lossMult] = getRegularizatonCoefficients(NaN, i, j);
     if (any(any(isnan(lambdas))))
-        lambda_reg = [1, lambda*lossFunctionOrderMultiplier(i,j)];
+        lambda_reg = [1, lambda*lossMult];
     else
-        lambda_reg = [1, lambdas(i,j)*lossFunctionOrderMultiplier(i,j)];
+        lambda_reg = [1, lambdas(i,j)*lossMult];
     end
     data = dataN(rep);
     p = pnorms{i};
@@ -96,28 +97,7 @@ save(savefilename);
 disp(['Saved as ' savefilename])
 end
 
-function lossMult = lossFunctionOrderMultiplier(i,j)
-%load('Results/save_RegularizationCoefficients_2013-07-23_092626_1e5Dim_LBFGS_PoorData_NonregularizedErrors');
-%warning('Loading old multipliers');
 
-errMins = NaN(4,5);
-
-% Load the files and compute average min errror
-for ii = 1:12
-    fn = ['Regularization/',...
-        'save_RegularizationCoefficients_2021-08-29_235841_relativeLambdaMultipleRuns_NonregularizedErrors_run_', ...
-        num2str(ii), '.mat'];
-    load(fn, 'errMin')
-    %errMin = loadErrMin(fn);
-    if ii == 1
-        errMins = errMin;
-    else
-        errMins = (ii-1)/ii * errMins + 1/ii * errMin; % computing arithmetic mean for streaming data
-    end
-end
-
-lossMult = errMins(i,j);
-end
 
 
 function data = CreateBenchmarkProblem(rndErr, sysErr, minErr, id)
@@ -225,7 +205,8 @@ parfor k = 1:(plen * olen *N)
     
     lambda_reg = [1 0];
     if(strcmp(qnorms{i},'log'))
-        lambda_reg = [1, lambdas(4,2) * lossFunctionOrderMultiplier(4,2)];
+        [~, lossMult42] = getRegularizatonCoefficients(NaN, 4, 2);
+        lambda_reg = [1, lambdas(4,2) * lossMult42];
     end
     
     optimizer = optimizers{j};

@@ -3,18 +3,35 @@ if (nargin < 1)
     error('Experiment name cannot be empty')
 end
 threshold = 1;
-[err, relErr, lambda2, errL2] = gerErrors(threshold, wd);
+[err, relErr, lambda2, errL2, stdErrL2] = gerErrors(threshold, wd);
 
+figure()
 bestErr = Inf(4,5);
 bestLambda = zeros(4,5);
+k = 1;
 for i=1:size(errL2,1)
     for j=1:size(errL2,2)
+        subplot(size(errL2,1), size(errL2, 2), k);
+        k = k + 1;
+        e2 = NaN(size(errL2,3),1);
+        s2 = NaN(size(errL2,3),1);
         for l = 1:size(errL2,3)
+            e2(l) = errL2(i,j,l);
+            s2(l) = stdErrL2(i,j,l);
+            
             if(errL2(i,j,l)<bestErr(i,j))
                 bestErr(i,j) = errL2(i,j,l);
                 bestLambda(i,j) = lambda2(l);
             end
         end
+        [~, is] = sort(lambda2);
+        h = errorbar(lambda2(is), e2(is), s2(is));
+        xlim([-0.1 2.1]);
+        
+        y = ylim; % current y-axis limits
+        hl = line([bestLambda(i,j) bestLambda(i,j)], [y(1) y(2)]);
+        set(hl, 'LineStyle', ':');
+        ylim(y);
     end
 end
 bestErrPercentage = round(100*bestErr)
@@ -26,7 +43,7 @@ save(savefilename);
 disp(['Saved results as ' savefilename]);
 end
 
-function [err, relErr, lambda2, errL2] = gerErrors(relErrTreshold, wd)
+function [err, relErr, lambda2, errL2, stdErrL2] = gerErrors(relErrTreshold, wd)
 err=[];
 
 fns = {'save_2021-09-02_124353BenchmarkingExperiment_12_Repetetive_Fits_12_RelativeLambda_RegularizationCoefficientChoice_minErr_001.mat',...
@@ -55,28 +72,19 @@ fns = {'save_2021-09-02_124353BenchmarkingExperiment_12_Repetetive_Fits_12_Relat
 
 for i = 1:length(fns)
     
-    [err(:,:,i), relErr(:,:,i), lambda2(i), errL2(:,:,i)] = getError(fullfile(wd, 'Results', fns{i}),...
+    [err(:,:,i), relErr(:,:,i), lambda2(i), errL2(:,:,i), stdErrL2(:,:,i)] = getError(fullfile(wd, 'Regularization', fns{i}),...
         relErrTreshold);
     
 end
-
-
-% [err(:,:,1), relErr(:,:,1), lambda2(1)] = getError('Results\save_2013-07-29_140735BenchmarkingExperiment_14_Repetetive_Fits_11_RelativeLambda_RegularizationCoefficientChoice',relErrTreshold);
-% [err(:,:,2), relErr(:,:,2), lambda2(2)] = getError('Results\save_2013-07-30_010755BenchmarkingExperiment_14_Repetetive_Fits_105_RelativeLambda_RegularizationCoefficientChoice',relErrTreshold);
-% [err(:,:,3), relErr(:,:,3), lambda2(3)] = getError('Results\save_2013-07-30_123147BenchmarkingExperiment_14_Repetetive_Fits_102_RelativeLambda_RegularizationCoefficientChoice',relErrTreshold);
-% [err(:,:,4), relErr(:,:,4), lambda2(4)] = getError('Results\save_2013-07-31_001956BenchmarkingExperiment_14_Repetetive_Fits_101_RelativeLambda_RegularizationCoefficientChoice',relErrTreshold);
-% [err(:,:,5), relErr(:,:,5), lambda2(5)] = getError('Results\save_2013-07-31_122905BenchmarkingExperiment_14_Repetetive_Fits_1005_RelativeLambda_RegularizationCoefficientChoice',relErrTreshold);
-% [err(:,:,6), relErr(:,:,6), lambda2(6)] = getError('Results\save_2013-08-01_011632BenchmarkingExperiment_14_Repetetive_Fits_1002_RelativeLambda_RegularizationCoefficientChoice',relErrTreshold);
-% [err(:,:,7), relErr(:,:,7), lambda2(7)] = getError('Results\save_2013-08-01_144049BenchmarkingExperiment_14_Repetetive_Fits_1001_RelativeLambda_RegularizationCoefficientChoice',relErrTreshold);
-
 end
 
-function [err, relErr, lambda2, errL2] = getError(filename, relErrTreshold)
+function [err, relErr, lambda2, errL2, stdErrL2] = getError(filename, relErrTreshold)
 load(filename, 'models', 'lambda');
 lambda2=lambda(2);
 [ii,jj,ll] = size(models);
 err = zeros(jj,ll);
 errL2 = zeros(jj, ll);
+stdErrL2 = zeros(jj, ll);
 relErr=zeros(jj,ll);
 
 kRefOh = [0.0500
@@ -98,6 +106,7 @@ for j=1:jj
             end
         end
         errL2(j,l) = mean(errorL2);
+        stdErrL2(j,l) = std(errorL2);
         relError = sort(relError);
         relErr(j,l) = mean(relError); % relError(1:10)
     end
