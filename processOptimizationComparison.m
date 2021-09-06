@@ -11,7 +11,7 @@ savefilenames = {'Regularization/save_2021-09-03_114156_OptimizationComparison_N
 [good, allResults] = processFiles(savefilenames);
 % processUniqunessExperimentImportanceSampling()
 
-% processed_all_results = processAllResults(allResults);
+processed_all_results = processAllResults(allResults);
 
 end
 
@@ -19,19 +19,24 @@ function allResults = processAllResults(allResults)
 alpha = 0.05;
 
 allIds = allResults(:,1);
-%  [allResults; problemId, problemNo, problemRand, problemSys, problemMin, ...
-%                 regularized, i, j, kEuclideanMean(i,j), kEuclideanStd(i,j), sampleN]
-isBest = zeros(size(allResults, 1), 1);
-allResults = [allResults, isBest];
-ids = unique(allResults(:,1));
+% allResults{ar_row,1} = id;
+% allResults{ar_row,2} = pqnames{i};
+% allResults{ar_row,3} = optimizers{j};
+% allResults{ar_row,4} = kEuclideanMean(i,j);
+% allResults{ar_row,5} = kEuclideanStd(i,j);
+% allResults{ar_row,6} = sampleN;
+% allResults{ar_row,7} = 0; % is_best -- to be filled in later
+% allResults{ar_row,8} = [id, '-', optimizers{j}]; % problem-algorithm pair
+
+ids = unique(allResults(:,8));
 for l = 1:(length(ids))
-    id = ids(l);
-    inds = allResults(:,1) == id;
+    id = ids{l};
+    inds = strcmp(allResults(:,8), id);
     indsNum = 1:length(inds);
     indsNum = indsNum(inds);
-    means = allResults(inds, 9);
-    stds = allResults(inds, 10);
-    ns = allResults(inds, 11);
+    means = cell2mat(allResults(inds, 4));
+    stds = cell2mat(allResults(inds, 5));
+    ns = cell2mat(allResults(inds, 6));
     [minMean, indMin] = min(means);
     minSd = stds(indMin);
     minN = ns(indMin);
@@ -39,70 +44,88 @@ for l = 1:(length(ids))
         alphaBonferroni = alpha / sum(inds);
         [hRejected, p] = my_ttest(minMean, means(i), minSd, stds(i), minN, ns(i), alphaBonferroni);
         if ~hRejected
-            allResults(indsNum(i), 12) = 1;
+            allResults(indsNum(i), 7) = {1};
         end
     end
 end
 
-function pn = getReadablePnorms(pnorm)
-switch(pnorm)
-    case 0.5
-        pn = 'Root';
-    case 1
-        pn = 'Absolute';
-    case 2
-        pn = 'Square';
-    case 'log'
-        pn = 'Log';
-    case 'rel'
-        pn = 'Relative';
-    otherwise
-        error('processBenchmarkingExperiment:getReadablePnorms', 'Unsupported pnorm');
+    function pn = getReadablePnorms(pnorm)
+        switch(pnorm)
+            case 0.5
+                pn = 'Root';
+            case 1
+                pn = 'Absolute';
+            case 2
+                pn = 'Square';
+            case 'log'
+                pn = 'Log';
+            case 'rel'
+                pn = 'Relative';
+            otherwise
+                error('processBenchmarkingExperiment:getReadablePnorms', 'Unsupported pnorm');
+        end
+    end
+
+
+
+
+ids = unique(allResults(:,1));
+problems = unique(allResults(:,2));
+plen = length(problems);
+optimizers = unique(allResults(:,3));
+olen = length(optimizers);
+all_wins = zeros(plen, olen);
+
+tableString = ['\\hline Exp. & Formulation'];
+for i = 1:olen
+   tableString = [tableString ' & ', makeReadableOptimizer(optimizers{i})];
 end
-end
+tableString = [tableString  ' & Wins '];
 
-tableString = ['\\hline Exp. & Rand. & Sys. & Min. & Reg. & $L_\\text{time}$ & NaN & log & 0.5 & 1 & 2 & Wins '];
-
-
-qnorms= {NaN, 'log', 0.5, 1, 2};
-pnorms = {'log', 0.5, 1, 2};
-plen = length(pnorms);
-qlen = length(qnorms);
-all_wins = zeros(plen, qlen);
+wins = zeros(1,olen);
 for l = 1:(length(ids))
-    id = ids(l);
-    inds = allResults(:,1) == id;
-    res = allResults(inds, :);
-    regs = unique(allResults(inds, 6)).';
-    if (res(1,2) == 1)
+    id = ids{l};
+    inds = strcmp(allResults(:,1), id);
+    indsNum = 1:length(inds);
+    indsNum = indsNum(inds);
+    res = allResults(indsNum, :);
+    
+    if (strcmp(id, 'Noureddini'))
         experiment = 'N.';
-    elseif (res(1,2) == 2)
+    elseif (strcmp(id, 'Jansri'))
         experiment = 'J.';
+    elseif (strcmp(id, 'Klofutar'))
+        experiment = 'K.';
     else
         experiment = 'NA';
     end
-    newId = ['\n ' '\\hline \\multirow{8}{*}{' experiment '} ' num2str(res(1,3:5), ' & \\\\multirow{8}{*}{$%d$} & \\\\multirow{8}{*}{$%d$} & \\\\multirow{8}{*}{$%d$}')];
-    wins = zeros(1, qlen);
-    for regularized = regs
-        resr = res(res(:,6) == regularized, :);
-        if (regularized == regs(1))
-            newId = [newId '& \\multirow{4}{*}{$' num2str(regularized) '$}'];
-        else
-            newId = [' \\cline{5-12} \n & & & & \\multirow{4}{*}{$'  num2str(regularized)  '$}'];
-        end
+    
+    hline = true;
         
         for i = 1:plen
-            resrp = resr(resr(:,7) == i, :);
+            resp = res(strcmp(res(:,2), problems{i}), :);
             winsP = 0;
-            tableString = [tableString ' \\\\ ' newId  ' & ' getReadablePnorms(pnorms{i}) '  '];
-            newId = '\n & & & &';
-            for j = 1:qlen
-                resrpq = resrp(resrp(:,8) == j, :);
-                kMean = resrpq(9);
-                kStd = resrpq(10);
+            
+            pname = problems{i};
+            if (strcmp(problems{i}, 'Regularized log-square'))
+               pname = 'Reg. log-sq.'; 
+            end
+            
+            hl = '';
+            if hline
+                hl = ['\\hline \n \\multirow{3}{*}{' experiment '} '];
+                hline = false;
+            end
+            
+            tableString = [tableString ' \\\\ \n  ' hl ' & ' pname '  '];
+            
+            for j = 1:olen
+                respq = resp(strcmp(resp(:,3), optimizers{j}), :);
+                kMean = cell2mat(respq(4));
+                kStd = cell2mat(respq(5));
                 mathbfOpen = '';
                 mathbfClose = '';
-                isWinner = resrpq(12) == 1;
+                isWinner = cell2mat(respq(7)) == 1;
                 if (isWinner)
                     mathbfOpen = '\\boldsymbol{';
                     mathbfClose = '}';
@@ -117,11 +140,19 @@ for l = 1:(length(ids))
             end
             tableString = [tableString ' & $' num2str(winsP) '$ '];
         end
-    end
-    tableString = [tableString ' \\\\ \\cline{5-12} \n \\multicolumn{6}{r}{$L_\\text{comp}$ wins} & ' num2str(wins, '$%d$ & $%d$ & $%d$ & $%d$ & $%d$') ' & '];
     
 end
-tableString = [tableString ' \\\\ \\hline \n'];
+compareWins = false;
+if (compareWins)
+    tableString = [tableString ' \\\\ \\hline \n & Wins '];
+    for j = 1:olen
+        tableString = [tableString ' & ', num2str(wins(j))];
+    end
+    tableString = [tableString ' & \\\\ \\hline \n'];
+else
+    tableString = [tableString ' \\\\ \\hline \n'];
+end
+
 sprintf(tableString)
 % Funciton processAllResults prints the same data as in tableString but
 % sorted and with \boldfont added for the best results and those that are
@@ -182,6 +213,28 @@ col(col>95) = -900 + 10 * col(col>95);
 col = num2str(round(col));
 end
 
+function opt = makeReadableOptimizer(str)
+opt = str;
+switch str %make it case insensitive. all lower cases
+    case 'ampso'
+        opt = 'AMPSO';
+    case 'apgskimode'
+        opt = 'APGSK-IMODE';
+    case 'cmaes'
+        opt = 'CMA-ES';
+    case 'derandinfty'
+        opt = 'DE/rand/$\\infty$';
+    case 'fmincon'
+        opt = 'SQP';
+    case 'madDE'
+        opt = 'MadDE';
+    case 'somat3a'
+        opt = 'SOMA T3A';
+    otherwise
+        error('processOptimizationComparison:Not supported optimizer type');
+end
+end
+
 function [good, allResults] = processFiles(savefilenames)
 
 
@@ -191,7 +244,8 @@ end
 
 tableString = '';
 plotting = true;
-allResults = [];
+allResults = cell(3*7*length(savefilenames),7); % plen * olen * experiments
+ar_row = 0;
 
 allP = [];
 
@@ -251,7 +305,7 @@ for indFile = 1:length(savefilenames)
             kb = sum(kVal{i,j}(:,[2 4 6]).').';
             
             data.k = dataN(1).k;
-
+            
             [r, ~] = size(kVal{i,j});
             isGood = all(kVal{i,j}>repmat(data.k.'*lRelativeAccuracy,r,1),2) & ...
                 all(kVal{i,j}<repmat(data.k.'*uRelativeAccuracy,r,1),2);
@@ -283,7 +337,15 @@ for indFile = 1:length(savefilenames)
             end
             
             sampleN = length(kEuclideanDists);
-%             allResults = [allResults; id, pqnames{i}, optimizers{j}, kEuclideanMean(i,j), kEuclideanStd(i,j), sampleN];
+            ar_row = ar_row + 1;
+            allResults{ar_row,1} = id;
+            allResults{ar_row,2} = pqnames{i};
+            allResults{ar_row,3} = optimizers{j};
+            allResults{ar_row,4} = kEuclideanMean(i,j);
+            allResults{ar_row,5} = kEuclideanStd(i,j);
+            allResults{ar_row,6} = sampleN;
+            allResults{ar_row,7} = 0; % is_best -- to be filled in later
+            allResults{ar_row,8} = [id, '-', optimizers{j}]; % problem-algorithm pair
             
             tableString = [tableString ' & ' '\\cellcolor{green!'	getCellColor(kEuclideanMean(i,j))	'}' ...
                 ' $' num2str(kEuclideanMean(i,j), '%2.1f') ' \\pm ' num2str(kEuclideanStd(i,j), '%2.1f') '$ '];
@@ -373,7 +435,7 @@ for indFile = 1:length(savefilenames)
 end
 tableString = [tableString '\\\\ \\hline \n'];
 fprintf(tableString)
-allP(allP(:,1)>0.05,:) % Results of Shapiro-Wilk normality tests 
+allP(allP(:,1)>0.05,:) % Results of Shapiro-Wilk normality tests
 end
 
 
