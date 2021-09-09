@@ -4,9 +4,12 @@ function processOptimizationComparison
 %     'Results/save_2021-08-22_214839_OptimizationComparison_Klofutar_8_RepetetiveFits_7-optimizers_nonregularized_minErr_001.mat',...
 %     'Results/save_2021-08-23_003836_OptimizationComparison_Jansri_8_RepetetiveFits_7-optimizers_nonregularized_minErr_001.mat'};
 
-savefilenames = {'Regularization/save_2021-09-03_114156_OptimizationComparison_Noureddini_8_RepetetiveFits_compareOptimizersLambdaM_regularized_minErr_001.mat',...
-    'Regularization/save_2021-09-04_002314_OptimizationComparison_Jansri_8_RepetetiveFits_compareOptimizersLambdaM_regularized_minErr_001.mat',...
-    'Regularization/save_2021-09-04_182444_OptimizationComparison_Klofutar_8_RepetetiveFits_compareOptimizersLambdaM_regularized_minErr_001.mat'};
+savefilenames = {'Regularization/save_2021-09-07_161504_OptimizationComparison_Noureddini_30_RepetetiveFits_7-optimizers_nonregularized_minErr_001_pnameFixed.mat',...
+    'Regularization/save_2021-09-08_024025_OptimizationComparison_Jansri_30_RepetetiveFits_7-optimizers_nonregularized_minErr_001_pnameFixed.mat',...
+    'Regularization/save_2021-09-08_154749_OptimizationComparison_Klofutar_30_RepetetiveFits_7-optimizers_nonregularized_minErr_001_pnameFixed.mat',...
+    'Regularization/save_2021-09-09_121801_OptimizationComparison_Noureddini_30_RepetetiveFits_7-optimizers_regularized_minErr_001.mat',...
+    'Regularization/save_2021-09-09_151122_OptimizationComparison_Jansri_30_RepetetiveFits_7-optimizers_regularized_minErr_001.mat',...
+    'Regularization/save_2021-09-09_191054_OptimizationComparison_Klofutar_30_RepetetiveFits_7-optimizers_regularized_minErr_001.mat'};
 
 [good, allResults] = processFiles(savefilenames);
 % processUniqunessExperimentImportanceSampling()
@@ -18,9 +21,8 @@ end
 function allResults = processAllResults(allResults)
 alpha = 0.05;
 
-allIds = allResults(:,1);
 % allResults{ar_row,1} = id;
-% allResults{ar_row,2} = pqnames{i};
+% allResults{ar_row,2} = pnames{i};
 % allResults{ar_row,3} = optimizers{j};
 % allResults{ar_row,4} = kEuclideanMean(i,j);
 % allResults{ar_row,5} = kEuclideanStd(i,j);
@@ -49,25 +51,6 @@ for l = 1:(length(ids))
     end
 end
 
-    function pn = getReadablePnorms(pnorm)
-        switch(pnorm)
-            case 0.5
-                pn = 'Root';
-            case 1
-                pn = 'Absolute';
-            case 2
-                pn = 'Square';
-            case 'log'
-                pn = 'Log';
-            case 'rel'
-                pn = 'Relative';
-            otherwise
-                error('processBenchmarkingExperiment:getReadablePnorms', 'Unsupported pnorm');
-        end
-    end
-
-
-
 
 ids = unique(allResults(:,1));
 problems = unique(allResults(:,2));
@@ -78,7 +61,7 @@ all_wins = zeros(plen, olen);
 
 tableString = ['\\hline Exp. & Formulation'];
 for i = 1:olen
-   tableString = [tableString ' & ', makeReadableOptimizer(optimizers{i})];
+    tableString = [tableString ' & ', makeReadableOptimizer(optimizers{i})];
 end
 tableString = [tableString  ' & Wins '];
 
@@ -101,45 +84,48 @@ for l = 1:(length(ids))
     end
     
     hline = true;
+    
+    for i = 1:plen
+        resp = res(strcmp(res(:,2), problems{i}), :);
+        winsP = 0;
         
-        for i = 1:plen
-            resp = res(strcmp(res(:,2), problems{i}), :);
-            winsP = 0;
-            
-            pname = problems{i};
-            if (strcmp(problems{i}, 'Regularized log-square'))
-               pname = 'Reg. log-sq.'; 
-            end
-            
-            hl = '';
-            if hline
-                hl = ['\\hline \n \\multirow{3}{*}{' experiment '} '];
-                hline = false;
-            end
-            
-            tableString = [tableString ' \\\\ \n  ' hl ' & ' pname '  '];
-            
-            for j = 1:olen
-                respq = resp(strcmp(resp(:,3), optimizers{j}), :);
-                kMean = cell2mat(respq(4));
-                kStd = cell2mat(respq(5));
-                mathbfOpen = '';
-                mathbfClose = '';
-                isWinner = cell2mat(respq(7)) == 1;
-                if (isWinner)
-                    mathbfOpen = '\\boldsymbol{';
-                    mathbfClose = '}';
-                    wins(j) = wins(j) + 1;
-                    winsP = winsP + 1;
-                    all_wins(i,j) = all_wins(i,j) + 1;
-                end
-                
-                tableString = [tableString ' & ' '\\cellcolor{green!' getCellColor(kMean) '}' ...
-                    ' $' mathbfOpen num2str(kMean, '%2.1f') ' \\pm ' num2str(kStd, '%2.1f') mathbfClose '$ '];
-                
-            end
-            tableString = [tableString ' & $' num2str(winsP) '$ '];
+        pname = problems{i};
+        if (strcmp(problems{i}, 'Log-square'))
+            pname = 'Log-sq.';
         end
+        if (strcmp(problems{i}, 'Regularized log-square'))
+            pname = 'Reg. log-sq.';
+        end
+        
+        hl = '';
+        if hline
+            hl = ['\\hline \n \\multirow{4}{*}{' experiment '} '];
+            hline = false;
+        end
+        
+        tableString = [tableString ' \\\\ \n  ' hl ' & ' pname '  '];
+        
+        for j = 1:olen
+            respq = resp(strcmp(resp(:,3), optimizers{j}), :);
+            kMean = cell2mat(respq(4));
+            kStd = cell2mat(respq(5));
+            mathbfOpen = '';
+            mathbfClose = '';
+            isWinner = cell2mat(respq(7)) == 1;
+            if (isWinner)
+                mathbfOpen = '\\boldsymbol{';
+                mathbfClose = '}';
+                wins(j) = wins(j) + 1;
+                winsP = winsP + 1;
+                all_wins(i,j) = all_wins(i,j) + 1;
+            end
+            
+            tableString = [tableString ' & ' '\\cellcolor{green!' getCellColor(kMean) '}' ...
+                ' $' mathbfOpen num2str(kMean, '%2.1f') ' \\pm ' num2str(kStd, '%2.1f') mathbfClose '$ '];
+            
+        end
+        tableString = [tableString ' & $' num2str(winsP) '$ '];
+    end
     
 end
 compareWins = false;
@@ -160,6 +146,7 @@ sprintf(tableString)
 
 % The number of wins for each method (for regularized regression only)
 all_wins
+sum(all_wins.').'
 end
 
 
@@ -237,14 +224,13 @@ end
 
 function [good, allResults] = processFiles(savefilenames)
 
-
-if false == exist('pqnames')
-    pqnames = {'Relative', 'Square', 'Regularized log-square'};
-end
+% if false == exist('pqnames')
+%     pqnames = {'Relative', 'Square', 'Regularized log-square'};
+% end
 
 tableString = '';
 plotting = true;
-allResults = cell(3*7*length(savefilenames),7); % plen * olen * experiments
+allResults = cell(3*4*7,7); % plen * olen * experiments
 ar_row = 0;
 
 allP = [];
@@ -299,7 +285,7 @@ for indFile = 1:length(savefilenames)
     bestId = [1, 1, 1];
     bestIdOneStep = [1,1];
     for i = 1:plen
-        tableString = [tableString ' \\\\ \n  ' id ' & ' pqnames{i} '  '];
+        tableString = [tableString ' \\\\ \n  ' id ' & ' pnames{i} '  '];
         for j = 1:olen
             kf = sum(kVal{i,j}(:,[1 3 5]).').';
             kb = sum(kVal{i,j}(:,[2 4 6]).').';
@@ -323,7 +309,7 @@ for indFile = 1:length(savefilenames)
                 ylabel('k_b = k_2 + k_4 +k_6')
                 hl = line(sum(kc(:,[1 3 5]).').',sum(kc(:,[2 4 6]).').');
                 set(hl,'color','r','marker','o','linestyle','none');
-                title([pqnames{i} ' ' optimizers{j}]);
+                title([pnames{i} ' ' optimizers{j}]);
             end
             
             kActualMatrix = repmat(data.k.', size(kVal{i,j}, 1),1);
@@ -332,14 +318,18 @@ for indFile = 1:length(savefilenames)
             kEuclideanStd(i,j) = std(kEuclideanDists);
             nvar(i,j) = norm(kVal{i,j});
             if all(~isnan(kEuclideanDists))
-                [~,P,~] = swtest(kEuclideanDists);
+                if length(kEuclideanDists) < 3
+                    P = NaN;
+                else
+                    [~,P,~] = swtest(kEuclideanDists);
+                end
                 allP = [allP; P kEuclideanMean(i,j)];
             end
             
             sampleN = length(kEuclideanDists);
             ar_row = ar_row + 1;
             allResults{ar_row,1} = id;
-            allResults{ar_row,2} = pqnames{i};
+            allResults{ar_row,2} = pnames{i};
             allResults{ar_row,3} = optimizers{j};
             allResults{ar_row,4} = kEuclideanMean(i,j);
             allResults{ar_row,5} = kEuclideanStd(i,j);
@@ -358,7 +348,7 @@ for indFile = 1:length(savefilenames)
                 
                 xlabel('Index i')
                 ylabel('Rate constant k_i')
-                title([pqnames{i} ' ' optimizers{j} ...
+                title([pnames{i} ' ' optimizers{j} ...
                     ', ||k*-k|| = ', sprintf('%1.1f', kEuclideanMean(i,j)), ' � ', sprintf('%1.1f', kEuclideanStd(i,j))]);
             end
             if(j == 1)

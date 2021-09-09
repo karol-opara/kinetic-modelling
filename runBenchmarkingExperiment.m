@@ -26,7 +26,7 @@ end
 
 function RunExperimentRepetetiveFits(name, rndErr, sysErr, minErr, id,lambda, N,lambdas)
 savefilename = ['Results/' 'save_' datestr(now,'yyyy-mm-dd_HHMMSS') ...
-    'BenchmarkingExperiment_' num2str(N) '_Repetetive_Fits_' num2str(lambda)...
+    '_BenchmarkingExperiment_' num2str(N) '_Repetetive_Fits_' num2str(lambda)...
     '_RelativeLambda_' name '_minErr_' num2str(minErr)];
 savefilename(ismember(savefilename,' ,.:;!'))=[];
 
@@ -167,16 +167,24 @@ savefilename = ['Results/' 'save_' datestr(now,'yyyy-mm-dd_HHMMSS') ...
     name '_minErr_' num2str(minErr)];
 savefilename(ismember(savefilename,' ,.:;!'))=[];
 
-disp(['Comparing optimizers']);
+disp('Comparing optimizers');
 
-%warning('runBenchmarkingExperiment:RunUniqunessExperimentRepetetiveFits','Only 10 repeats');
-pnorms = {'rel', 2, 2};
-qnorms = {NaN, NaN, 'log'};
-pqnames = {'Relative', 'Square', 'Regularized log-square'};
-optimizers = {'somat3a', 'derandinfty', 'cmaes', 'ampso', 'apgskimode', 'madDE', 'fmincon'};
+noRegularization = all(all(lambdas == 0));
+if noRegularization
+    dips('Non-regularized loss');
+    %warning('runBenchmarkingExperiment:RunUniqunessExperimentRepetetiveFits','Only 10 repeats');
+    pnorms = {'rel', 2, 2};
+    qnorms = {NaN, NaN, 'log'};
+    pnames = {'Relative', 'Square', 'Log-square'};
+else
+    disp('Regularized loss');
+    pnorms = {2};
+    qnorms = {'log'};
+    pnames = {'Regularized log-square'};
+end
+optimizers = {'somat3a', 'cmaes', 'ampso', 'apgskimode','madDE', 'derandinfty', 'fmincon'};
 %warning('runBenchmarkingExperiment:RunUniqunessExperimentRepetetiveFits','Only NaN norms tried');
 plen = length(pnorms);
-qlen = length(qnorms);
 olen = length(optimizers);
 models = cell(N,olen,plen);
 for i = 1:N
