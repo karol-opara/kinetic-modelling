@@ -1,12 +1,24 @@
 function processBenchmarkingExperiment
 
-[good, allResults] = processRunUniqunessExperimentRepetetiveFits();
-% processUniqunessExperimentImportanceSampling()
+savefilenames = {'Results\save_2013-08-25_082739BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Noureddini_onlyRandomError_nonregularized', ...
+    'Results\save_2013-08-21_082412BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Noureddini_onlyRandomError_regularized', ...
+    'Results\save_2013-08-10_125425BenchmarkingExperiment_100_Repetetive_Fits_RelativeLambda_nonregularized_Noureddini', ...
+    'Results\save_2013-08-06_171029BenchmarkingExperiment_100_Repetetive_Fits_RelativeLambda_regularized_Noureddini', ...
+    'Results\save_2013-08-26_142908BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Jansri_onlyRandomError_nonregularized', ...
+    'Results\save_2013-08-21_093754BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Jansri_onlyRandomError_regularized', ...
+    'Results\save_2013-08-12_085251BenchmarkingExperiment_100_Repetetive_Fits_RelativeLambda_nonregularized_Jansri', ...
+    'Results\save_2013-08-06_171301BenchmarkingExperiment_100_Repetetive_Fits_RelativeLambda_regularized_Jansri', ...
+    'Results/save_2020-05-12_232318BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Noureddini_randomErr_nonregularized_minErr_nonregularized_minErr_001', ...
+    'Results/save_2020-05-15_012451BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Noureddini_randomErr_regularized_minErr_regularized_minErr_001', ...
+    'Results/save_2020-05-16_135535BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Noureddini_sysAndRandomErr_nonregularized_minErr_nonregularized_minErr_001', ...
+    'Results/save_2020-05-18_163716BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Noureddini_sysAndRandomErr_regularized_minErr_regularized_minErr_001',...
+    'Results/save_2020-05-25_015412BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Jansri_sysAndRandomErr_nonregularized_minErr_nonregularized_minErr_001.mat', ...
+    'Results/save_2020-05-27_070850BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Jansri_sysAndRandomErr_regularized_minErr_regularized_minErr_001.mat', ... % _partial
+    'Results/save_2020-05-23_023907BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Jansri_randomErr_regularized_minErr_regularized_minErr_001.mat', ...
+    'Results/save_2020-05-20_160454BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Jansri_randomErr_nonregularized_minErr_nonregularized_minErr_001.mat'};
 
+[good, allResults] = processLossRegResults(savefilenames);
 processed_all_results = processAllResults(allResults);
-% processed_all_results = [problemId	problemNo	problemRand	problemSys
-% ...
-% problemMin	regularized	i	j	kEuclideanMean(i,j)	kEuclideanStd(i,j)	sampleN	isBest]
 end
 
 function allResults = processAllResults(allResults)
@@ -38,22 +50,22 @@ for l = 1:(length(ids))
     end
 end
 
-function pn = getReadablePnorms(pnorm)
-switch(pnorm)
-    case 0.5
-        pn = 'Root';
-    case 1
-        pn = 'Absolute';
-    case 2
-        pn = 'Square';
-    case 'log'
-        pn = 'Log';
-    case 'rel'
-        pn = 'Relative';
-    otherwise
-        error('processBenchmarkingExperiment:getReadablePnorms', 'Unsupported pnorm');
-end
-end
+    function pn = getReadablePnorms(pnorm)
+        switch(pnorm)
+            case 0.5
+                pn = 'Root';
+            case 1
+                pn = 'Absolute';
+            case 2
+                pn = 'Square';
+            case 'log'
+                pn = 'Log';
+            case 'rel'
+                pn = 'Relative';
+            otherwise
+                error('processBenchmarkingExperiment:getReadablePnorms', 'Unsupported pnorm');
+        end
+    end
 
 tableString = ['\\hline Exp. & Rand. & Sys. & Min. & Reg. & $L_\\text{time}$ & NaN & log & 0.5 & 1 & 2 & Wins '];
 
@@ -72,6 +84,10 @@ for l = 1:(length(ids))
         experiment = 'N.';
     elseif (res(1,2) == 2)
         experiment = 'J.';
+    elseif (res(1,2) == 3)
+        experiment = 'K.';
+    elseif (res(1,2) == 4)
+        experiment = 'O.';
     else
         experiment = 'NA';
     end
@@ -122,7 +138,7 @@ sprintf(tableString)
 % not statistically significantly worse than the best
 
 % The number of wins for each method (for regularized regression only)
-all_wins
+all_wins;
 end
 
 
@@ -190,6 +206,7 @@ if (~isempty(regexp(filename, '_regularized', 'once')))
 end
 
 experiment = NaN;
+
 if strcmp(id,'Noureddini')
     experiment = 'N.';
     experimentNumeric = 1;
@@ -201,6 +218,10 @@ end
 if strcmp(id,'Klofutar')
     experiment = 'K.';
     experimentNumeric = 3;
+end
+if strcmp(id,'Oh')
+    experiment = 'O.';
+    experimentNumeric = 4;
 end
 
 text = [experiment ' & ' '$1$' ' & $' num2str(sysErr) '$ & $' num2str(minErrStr) '$ & $'  num2str(regularized) '$ '];
@@ -222,28 +243,7 @@ col(col>95) = -900 + 10 * col(col>95);
 col = num2str(round(col));
 end
 
-function [good, allResults] = processRunUniqunessExperimentRepetetiveFits()
-
-savefilenames = {'Results\save_2021-09-03_004111BenchmarkingExperiment_8_Repetetive_Fits_NaN_RelativeLambda_testNewRegularization_regularized_minErr_001.mat'};
-
-% %100 reps as in the R2 paper (long computations performed in IIASA + computation in SRI PAS)
-% savefilenames = {'Results\save_2013-08-25_082739BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Noureddini_onlyRandomError_nonregularized', ...
-%     'Results\save_2013-08-21_082412BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Noureddini_onlyRandomError_regularized', ...
-%     'Results\save_2013-08-10_125425BenchmarkingExperiment_100_Repetetive_Fits_RelativeLambda_nonregularized_Noureddini', ...
-%     'Results\save_2013-08-06_171029BenchmarkingExperiment_100_Repetetive_Fits_RelativeLambda_regularized_Noureddini', ...
-%     'Results\save_2013-08-26_142908BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Jansri_onlyRandomError_nonregularized', ...
-%     'Results\save_2013-08-21_093754BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Jansri_onlyRandomError_regularized', ...
-%     'Results\save_2013-08-12_085251BenchmarkingExperiment_100_Repetetive_Fits_RelativeLambda_nonregularized_Jansri', ...
-%     'Results\save_2013-08-06_171301BenchmarkingExperiment_100_Repetetive_Fits_RelativeLambda_regularized_Jansri', ...
-%     'Results/save_2020-05-12_232318BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Noureddini_randomErr_nonregularized_minErr_nonregularized_minErr_001', ...
-%     'Results/save_2020-05-15_012451BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Noureddini_randomErr_regularized_minErr_regularized_minErr_001', ...
-%     'Results/save_2020-05-16_135535BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Noureddini_sysAndRandomErr_nonregularized_minErr_nonregularized_minErr_001', ...
-%     'Results/save_2020-05-18_163716BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Noureddini_sysAndRandomErr_regularized_minErr_regularized_minErr_001',...
-%     ... % Partial results for Jansri experiement with absolute random error (minErr) -- not included in the revised paper R1 to ASOC as was not ready yet
-%     'Results/save_2020-05-25_015412BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Jansri_sysAndRandomErr_nonregularized_minErr_nonregularized_minErr_001.mat', ...
-%     'Results/save_2020-05-27_070850BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Jansri_sysAndRandomErr_regularized_minErr_regularized_minErr_001.mat', ... % _partial
-%     'Results/save_2020-05-23_023907BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Jansri_randomErr_regularized_minErr_regularized_minErr_001.mat', ...
-%     'Results/save_2020-05-20_160454BenchmarkingExperiment_100_Repetetive_Fits_NaN_RelativeLambda_Jansri_randomErr_nonregularized_minErr_nonregularized_minErr_001.mat'};
+function [good, allResults] = processLossRegResults(savefilenames)
 
 tableString = '';
 plotting = true;
@@ -317,14 +317,14 @@ for indFile = 1:length(savefilenames)
             good(i,j) = round(100*numel(kc)/numel(kVal{i,j}));
             
             if(plotting)
-                        subplot(plen,qlen,qlen*(i-1)+j)
-                        h = plot(kf,kb,'go',sum(data.k([1,3,5])),sum(data.k([2,4,6])),'*');
-                        set(gca,'xScale','log','yScale','log');
-                        axis([1e-2 1e3 1e-2 1e3]);
-                        xlabel('k_f = k_1 + k_3 +k_5')
-                        ylabel('k_b = k_2 + k_4 +k_6')
-                        hl = line(sum(kc(:,[1 3 5]).').',sum(kc(:,[2 4 6]).').');
-                        set(hl,'color','r','marker','o','linestyle','none');
+                subplot(plen,qlen,qlen*(i-1)+j)
+                h = plot(kf,kb,'go',sum(data.k([1,3,5])),sum(data.k([2,4,6])),'*');
+                set(gca,'xScale','log','yScale','log');
+                axis([1e-2 1e3 1e-2 1e3]);
+                xlabel('k_f = k_1 + k_3 +k_5')
+                ylabel('k_b = k_2 + k_4 +k_6')
+                hl = line(sum(kc(:,[1 3 5]).').',sum(kc(:,[2 4 6]).').');
+                set(hl,'color','r','marker','o','linestyle','none');
             end
             
             kActualMatrix = repmat(data.k.', size(kVal{i,j}, 1),1);
@@ -422,15 +422,18 @@ for indFile = 1:length(savefilenames)
     end
     % fprintf(pPrint)
     
-    fprintf(hPrint)
-    kEuclideanMean
-    good
-    hOneStep
-    pOneStep
+    %     fprintf(hPrint)
+    %     kEuclideanMean
+    %     good
+    %     hOneStep
+    %     pOneStep
 end
-tableString = [tableString '\\\\ \\hline \n'];
-fprintf(tableString)
-allP(allP(:,1)>0.05,:) % Results of Shapiro-Wilk normality tests 
+printingFinalResults = false;
+if (printingFinalResults)
+    tableString = [tableString '\\\\ \\hline \n'];
+    fprintf(tableString)
+    allP(allP(:,1)>0.05,:) % Results of Shapiro-Wilk normality tests
+end
 end
 
 function processUniqunessExperimentImportanceSampling()
