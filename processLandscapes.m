@@ -1,31 +1,8 @@
 function processLandscapes()
 processLandscapes2013();
-%processLandscapes2012(); % landscapes from YSSP report
 end
 
 function processLandscapes2013()
-% poorDataFit={'Results/save_2013-07-11_163658_KineticsModelLandscape_condition_5_SRI_nonregularized_L2_QNaN',...
-%     'Results/save_2013-07-12_032246_KineticsModelLandscape_condition_5_SRI_regularized01_L2_QNaN',...
-%     'Results/save_2013-07-13_124040_KineticsModelLandscape_condition_5_SRI_nonregularized_L2_Qlog',...
-%     'Results/save_2013-07-14_000853_KineticsModelLandscape_condition_5_SRI_regularized01_L2_Qlog'};
-% goodDataFit={'Results/save_2013-07-12_133850_KineticsModelLandscape_condition_7_SRI_nonregularized_L2_QNaN',...
-%     'Results/save_2013-07-13_005848_KineticsModelLandscape_condition_7_SRI_regularized01_L2_QNaN',...
-%     'Results/save_2013-07-14_115358_KineticsModelLandscape_condition_7_SRI_nonregularized_L2_Qlog',...
-%     'Results/save_2013-07-14_234202_KineticsModelLandscape_condition_7_SRI_regularized01_L2_Qlog'};
-% l1data = {'Results/save_2013-07-15_113034_KineticsModelLandscape_condition_5_SRI_nonregularized_L1_Qlog',...
-%     'Results/save_2013-07-15_224208_KineticsModelLandscape_condition_5_SRI_regularized01_L1_Qlog',...
-%     'Results/save_2013-07-16_101005_KineticsModelLandscape_condition_7_SRI_nonregularized_L1_Qlog',...
-%     'Results/save_2013-07-16_220230_KineticsModelLandscape_condition_7_SRI_regularized01_L1_Qlog'};
-%
-% l2nonregData = {'Results/save_2013-07-23_095951_KineticsModelLandscape_condition_5_OPP_nonregularized_L2_QNaN',...
-%     'Results/save_2013-07-23_232017_KineticsModelLandscape_condition_7_OPP_nonregularized_L2_QNaN',...
-%     'Results/save_2013-07-24_132350_KineticsModelLandscape_condition_5_OPP_nonregularized_L2_Qlog',...
-%     'Results/save_2013-07-25_033347_KineticsModelLandscape_condition_7_OPP_nonregularized_L2_Qlog'};
-%
-% l1nonregData = {'Results/save_2013-07-25_174438_KineticsModelLandscape_condition_5_OPP_nonregularized_L1_Qlog',...
-%     'Results/save_2013-07-26_080519_KineticsModelLandscape_condition_7_OPP_nonregularized_L1_Qlog',...
-%     'Results/save_2013-07-26_223843_KineticsModelLandscape_condition_5_OPP_nonregularized_Llog_QNaN',...
-%     'Results/save_2013-07-27_115222_KineticsModelLandscape_condition_7_OPP_nonregularized_Llog_QNaN'};
 
 L2QNaNData = {'Results/save_2013-07-23_095951_KineticsModelLandscape_condition_5_OPP_nonregularized_L2_QNaN',... % 5 non
     'Results/save_2013-07-29_100926_KineticsModelLandscape_condition_5_OPP_regularized_L2_QNaN',... % 5 reg
@@ -52,25 +29,9 @@ close all
 titles = {'','','',''};%{' poor', ' poor regularized', ' good', ' good regularized'};
 plotFourLandscapes(L2QNaNData,titles,'contourf');
 plotFourLandscapes(L2QLogData,titles,'contourf');
-%plotFourLandscapes(L1QLogData,titles,'contourf');
-%plotFourLandscapes(LLogQNaNData,titles,'contourf');
 
 plotFourLandscapes(L2QNaNData,titles,'plot');
 plotFourLandscapes(L2QLogData,titles,'plot');
-%plotFourLandscapes(L1QLogData,titles,'plot');
-%plotFourLandscapes(LLogQNaNData,titles,'plot');
-
-% titles = {' L2 NaN',' regularized L2 NaN',' L2 log', ' regularized L2 log'};
-% plotFourLandscapes(poorDataFit,titles);
-% plotFourLandscapes(goodDataFit,titles);
-% titles = {' poor data L1 log', ' poor data regularizes L1 log', ' good data L1 log', ' good data regularized L1 log'};
-% plotFourLandscapes(l1data,titles);
-%
-% titles={' poor L2 QNaN', ' good L2 QNaN', ' poor L2 QLog', ' good L2 QLog'};
-% plotFourLandscapes(l2nonregData,titles);
-%
-% titles={' poor L1 Qlog', ' good L1 Qlog', ' poor Llog QNaN', ' good Llog QNan'};
-% plotFourLandscapes(l1nonregData,titles);
 end
 
 function plotFourLandscapes(data,titles, type)

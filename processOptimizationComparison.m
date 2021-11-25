@@ -1,9 +1,5 @@
 function processOptimizationComparison
-
-% savefilenames ={'Results/save_2021-08-22_185826_OptimizationComparison_Noureddini_8_RepetetiveFits_7-optimizers_nonregularized_minErr_001.mat',...
-%     'Results/save_2021-08-22_214839_OptimizationComparison_Klofutar_8_RepetetiveFits_7-optimizers_nonregularized_minErr_001.mat',...
-%     'Results/save_2021-08-23_003836_OptimizationComparison_Jansri_8_RepetetiveFits_7-optimizers_nonregularized_minErr_001.mat'};
-
+    
 savefilenames = {'Regularization/save_2021-09-07_161504_OptimizationComparison_Noureddini_30_RepetetiveFits_7-optimizers_nonregularized_minErr_001_pnameFixed.mat',...
     'Regularization/save_2021-09-08_024025_OptimizationComparison_Jansri_30_RepetetiveFits_7-optimizers_nonregularized_minErr_001_pnameFixed.mat',...
     'Regularization/save_2021-09-08_154749_OptimizationComparison_Klofutar_30_RepetetiveFits_7-optimizers_nonregularized_minErr_001_pnameFixed.mat',...
@@ -12,8 +8,6 @@ savefilenames = {'Regularization/save_2021-09-07_161504_OptimizationComparison_N
     'Regularization/save_2021-09-09_191054_OptimizationComparison_Klofutar_30_RepetetiveFits_7-optimizers_regularized_minErr_001.mat'};
 
 [good, allResults] = processFiles(savefilenames);
-% processUniqunessExperimentImportanceSampling()
-
 processed_all_results = processAllResults(allResults);
 
 end
@@ -149,7 +143,6 @@ all_wins
 sum(all_wins.').'
 end
 
-
 function [hRejected, p] = my_ttest(m1, m2, sd1, sd2, n1, n2, alpha)
 if (nargin == 0)
     % Test case, expected output t = 1.959, dof = 7.031, (two-tailed) p =
@@ -188,7 +181,6 @@ dof = ((s1n + s2n)^2) / ((s1n^2)/(n1-1) + (s2n^2)/(n2-1));
 p = tcdf(t, dof); % one-sided p-value
 hRejected = p <= alpha;
 end
-
 
 function col = getCellColor(k)
 mmax = 50;
@@ -230,7 +222,7 @@ function [good, allResults] = processFiles(savefilenames)
 
 tableString = '';
 plotting = true;
-allResults = cell(3*4*7,7); % plen * olen * experiments
+allResults = cell(1,7); % plen * olen * experiments
 ar_row = 0;
 
 allP = [];
@@ -371,17 +363,17 @@ for indFile = 1:length(savefilenames)
         end
     end
     % good
-    nvar
+    %nvar
     %round(nvar)
     %figure()
     %bar3(nvar)
     %bar3(good)
     control = dunnErrors(dunnErrors(:,2) == bestId(3),1);
-    for l = 1:plen*qlen
+    for l = 1:plen*olen
         group = dunnErrors(dunnErrors(:,2) == l,1);
         p(l) = signtest(control,group,'tail','right');
     end
-    h = p<0.05/plen*(qlen-1);
+    h = p<0.05/plen*(olen-1);
     
     controlOneStep = dunnErrors(dunnErrors(:,2) == bestIdOneStep(2),1);
     for l = 1:plen
@@ -396,7 +388,7 @@ for indFile = 1:length(savefilenames)
     pPrint = '';
     hPrint = '';
     for i = 1:plen
-        for j = 1:qlen
+        for j = 1:olen
             pPrint = [pPrint sprintf([' ' num2str(p(testId)) ' '])];
             if (h(testId))
                 htmp = 1;
@@ -417,17 +409,22 @@ for indFile = 1:length(savefilenames)
     end
     % fprintf(pPrint)
     
-    fprintf(hPrint)
-    kEuclideanMean
-    good
-    hOneStep
-    pOneStep
+    printInterimResults = false;
+    if (printInterimResults)
+        fprintf(hPrint)
+        kEuclideanMean
+        good
+        hOneStep
+        pOneStep
+    end
 end
+printFinalResults = false;
+if (printFinalResults)
 tableString = [tableString '\\\\ \\hline \n'];
 fprintf(tableString)
 allP(allP(:,1)>0.05,:) % Results of Shapiro-Wilk normality tests
 end
-
+end
 
 function plotErrorNorms(name, hmax)
 load(['saveTmpErrorNormSimulations' name '.mat']);
