@@ -4,15 +4,15 @@ processMany();
 end
 
 function processMany()
-%load('Results/save_LowConcComparison_2013-07-05_100552_reg0'); % data{2} is as predicted
-%load('Results/save_LowConcComparison_2013-07-05_111556_reg001');
-%load('Results/save_LowConcComparison_2013-07-05_121424_reg01');
+%load('../data/save_LowConcComparison_2013-07-05_100552_reg0'); % data{2} is as predicted
+%load('../data/save_LowConcComparison_2013-07-05_111556_reg001');
+%load('../data/save_LowConcComparison_2013-07-05_121424_reg01');
 
 % all eight experiments
-load('Results/save_LowConcComparison_2013-07-05_153144_reg0');
-load('Results/save_LowConcComparison_2013-07-05_171134_reg001');
-load('Results/save_LowConcComparison_2013-07-05_183649_reg01');
-%load('Results/save_LowConcComparison_2013-07-05_193059_reg1');
+load('../data/save_LowConcComparison_2013-07-05_153144_reg0');
+load('../data/save_LowConcComparison_2013-07-05_171134_reg001');
+load('../data/save_LowConcComparison_2013-07-05_183649_reg01');
+%load('../data/save_LowConcComparison_2013-07-05_193059_reg1');
 
 for j = 4%1:8
     for i =[1 4]%1:4
@@ -37,7 +37,7 @@ axis([-1 70 -Inf 0.3]);
 end
 
 function processTwo()
-load('Results/saveLowConcComparison') % with cmaes and 1e4 FEs
+load('../data/saveLowConcComparison') % with cmaes and 1e4 FEs
 plotConcentrationsOKERR(m2_ok, m2_err,'m2');
 plotConcentrationsOKERR(m1_ok, m1_err,'m1');
 plotConcentrationsOKERR(m05_ok, m05_err,'m05');

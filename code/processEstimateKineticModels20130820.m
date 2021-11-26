@@ -1,5 +1,5 @@
 function processEstimateKineticModels20130820
-load('Results/save_KineticModel_Batch_2013-08-20_202623_allData_regularized_LLogL2')
+load('../data/save_KineticModel_Batch_2013-08-20_202623_allData_regularized_LLogL2')
 
 for id = 1:length(data)
     for i=1:length(lambda)

@@ -37,7 +37,7 @@ end
 bestErrPercentage = round(100*bestErr);
 bestLambda
 
-savefilename = ['Results/' 'save_RegularizationCoefficientChoice_' ...
+savefilename = ['../results/' 'save_RegularizationCoefficientChoice_' ...
     datestr(now,'yyyy-mm-dd_HHMMSS') '_' name];
 save(savefilename);
 disp(['Saved results as ' savefilename]);
@@ -74,7 +74,7 @@ fns = {'save_2021-08-30_160310BenchmarkingExperiment_12_Repetetive_Fits_105_Rela
 
 for i = 1:length(fns)
     
-    [err(:,:,i), relErr(:,:,i), lambda2(i), errL2(:,:,i), stdErrL2(:,:,i)] = getError(fullfile(wd, 'Regularization', fns{i}),...
+    [err(:,:,i), relErr(:,:,i), lambda2(i), errL2(:,:,i), stdErrL2(:,:,i)] = getError(fullfile(wd, '../data/regularization', fns{i}),...
         relErrTreshold);
     
 end

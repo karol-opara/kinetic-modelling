@@ -1,7 +1,7 @@
 function model = EstimateKineticModels20130820(name)
 data=[];
 load('saveExperimentalData20130820_batch');
-savefilename = ['Results/' 'save_KineticModel_Batch_' ...
+savefilename = ['../results/' 'save_KineticModel_Batch_' ...
     datestr(now,'yyyy-mm-dd_HHMMSS') '_' name];
 
 weights = [0 1 1 1 1 1];

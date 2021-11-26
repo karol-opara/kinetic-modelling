@@ -6,7 +6,7 @@ end
 function manyExperiments(lambda,name)
 load saveExperimentalData20130319_8of13experiments_NRTLvalidation
 
-savefilename = ['Results/' 'save_LowConcComparison_' ...
+savefilename = ['../results/' 'save_LowConcComparison_' ...
     datestr(now,'yyyy-mm-dd_HHMMSS') '_' name];
 
 %lambda = [1, 0];
@@ -36,7 +36,7 @@ load saveExperimentalData20120807
 data_OK = data{7};
 data_err = data{5};
 
-savefilename = ['Results/' 'save_LowConcComparison_' ...
+savefilename = ['../results/' 'save_LowConcComparison_' ...
     datestr(now,'yyyy-mm-dd_HHMMSS') '_' name];
 
 lambda = [1, 0];

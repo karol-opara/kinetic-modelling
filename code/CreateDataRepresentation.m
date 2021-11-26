@@ -1,7 +1,7 @@
 
 function dataRepresentation = CreateDataRepresentation(name)
 % load Results\save_KineticModels_2012-08-16_172142_DataFrom20120807_L2_Lp
-load('Results/save_KineticModels_2013-03-19_113532_8of13experiments_NRTLvalidation.mat')
+load('../data/save_KineticModels_2013-03-19_113532_8of13experiments_NRTLvalidation.mat')
 
 
 tstart = tic;
@@ -9,7 +9,7 @@ tstart = tic;
 t = 2:0.5:70;
 N = 25;
 
-savefilename = ['Results/' 'save_' datestr(now,'yyyy-mm-dd_HHMMSS') name];
+savefilename = ['../results/' 'save_' datestr(now,'yyyy-mm-dd_HHMMSS') name];
 
 % k = getHandmadeKineticModelFit();
 % warning('Handmade k values used');

@@ -4,37 +4,43 @@ end
 
 function processLandscapes2013()
 
-L2QNaNData = {'Results/save_2013-07-23_095951_KineticsModelLandscape_condition_5_OPP_nonregularized_L2_QNaN',... % 5 non
-    'Results/save_2013-07-29_100926_KineticsModelLandscape_condition_5_OPP_regularized_L2_QNaN',... % 5 reg
-    'Results/save_2013-07-23_232017_KineticsModelLandscape_condition_7_OPP_nonregularized_L2_QNaN',... % 7 non
-    'Results/save_2013-07-29_222219_KineticsModelLandscape_condition_7_OPP_regularized_L2_QNaN'}; % 7 reg
+L2QNaNData = {'../data/save_2013-07-23_095951_KineticsModelLandscape_condition_5_OPP_nonregularized_L2_QNaN',... % 5 non
+    '../data/save_2013-07-29_100926_KineticsModelLandscape_condition_5_OPP_regularized_L2_QNaN',... % 5 reg
+    '../data/save_2013-07-23_232017_KineticsModelLandscape_condition_7_OPP_nonregularized_L2_QNaN',... % 7 non
+    '../data/save_2013-07-29_222219_KineticsModelLandscape_condition_7_OPP_regularized_L2_QNaN'}; % 7 reg
 
-L2QLogData = {'Results/save_2013-07-24_132350_KineticsModelLandscape_condition_5_OPP_nonregularized_L2_Qlog',... % 5 non
-    'Results/save_2013-07-30_110913_KineticsModelLandscape_condition_5_OPP_regularized_L2_Qlog',... % 5 reg
-    'Results/save_2013-07-25_033347_KineticsModelLandscape_condition_7_OPP_nonregularized_L2_Qlog',... % 7 non
-    'Results/save_2013-07-31_001330_KineticsModelLandscape_condition_7_OPP_regularized_L2_Qlog'}; % 7 reg
+L2QLogData = {'../data/save_2013-07-24_132350_KineticsModelLandscape_condition_5_OPP_nonregularized_L2_Qlog',... % 5 non
+    '../data/save_2013-07-30_110913_KineticsModelLandscape_condition_5_OPP_regularized_L2_Qlog',... % 5 reg
+    '../data/save_2013-07-25_033347_KineticsModelLandscape_condition_7_OPP_nonregularized_L2_Qlog',... % 7 non
+    '../data/save_2013-07-31_001330_KineticsModelLandscape_condition_7_OPP_regularized_L2_Qlog'}; % 7 reg
 
-L1QLogData = {'Results/save_2013-07-25_174438_KineticsModelLandscape_condition_5_OPP_nonregularized_L1_Qlog',... % 5 non
-    'Results/save_2013-07-31_130852_KineticsModelLandscape_condition_5_OPP_regularized_L1_Qlog',... % 5 reg
-    'Results/save_2013-07-26_080519_KineticsModelLandscape_condition_7_OPP_nonregularized_L1_Qlog',... % 7 non
-    'Results/save_2013-08-01_021127_KineticsModelLandscape_condition_7_OPP_regularized_L1_Qlog'}; % 7 reg
+L1QLogData = {'../data/save_2013-07-25_174438_KineticsModelLandscape_condition_5_OPP_nonregularized_L1_Qlog',... % 5 non
+    '../data/save_2013-07-31_130852_KineticsModelLandscape_condition_5_OPP_regularized_L1_Qlog',... % 5 reg
+    '../data/save_2013-07-26_080519_KineticsModelLandscape_condition_7_OPP_nonregularized_L1_Qlog',... % 7 non
+    '../data/save_2013-08-01_021127_KineticsModelLandscape_condition_7_OPP_regularized_L1_Qlog'}; % 7 reg
 
-LLogQNaNData = {'Results/save_2013-07-26_223843_KineticsModelLandscape_condition_5_OPP_nonregularized_Llog_QNaN',... % 5 non
-    'Results/save_2013-08-01_151919_KineticsModelLandscape_condition_5_OPP_regularized_Llog_QNaN',... % 5 reg
-    'Results/save_2013-07-27_115222_KineticsModelLandscape_condition_7_OPP_nonregularized_Llog_QNaN',... % 7 non
-    'Results/save_2013-08-02_041336_KineticsModelLandscape_condition_7_OPP_regularized_Llog_QNaN'}; % 7 reg
+LLogQNaNData = {'../data/save_2013-07-26_223843_KineticsModelLandscape_condition_5_OPP_nonregularized_Llog_QNaN',... % 5 non
+    '../data/save_2013-08-01_151919_KineticsModelLandscape_condition_5_OPP_regularized_Llog_QNaN',... % 5 reg
+    '../data/save_2013-07-27_115222_KineticsModelLandscape_condition_7_OPP_nonregularized_Llog_QNaN',... % 7 non
+    '../data/save_2013-08-02_041336_KineticsModelLandscape_condition_7_OPP_regularized_Llog_QNaN'}; % 7 reg
 
 
 close all
 titles = {'','','',''};%{' poor', ' poor regularized', ' good', ' good regularized'};
-plotFourLandscapes(L2QNaNData,titles,'contourf');
-plotFourLandscapes(L2QLogData,titles,'contourf');
+p1 = plotFourLandscapes(L2QNaNData,titles,'contourf');
+p2 = plotFourLandscapes(L2QLogData,titles,'contourf');
 
-plotFourLandscapes(L2QNaNData,titles,'plot');
-plotFourLandscapes(L2QLogData,titles,'plot');
+p3 = plotFourLandscapes(L2QNaNData,titles,'plot');
+p4 = plotFourLandscapes(L2QLogData,titles,'plot');
+
+saveas(p1, '../results/Fig_6_landscapes_square.png')
+saveas(p2, '../results/Fig_8_landscapes_logsquare.png')
+
+saveas(p3, '../results/Fig_7_best_trajectories_square.png')
+saveas(p4, '../results/Fig_9_best_trajectories_logsquare.png')
 end
 
-function plotFourLandscapes(data,titles, type)
+function nr = plotFourLandscapes(data,titles, type)
 nr = figure();
 subplot(2,2,1);
 hl = processLandscape(data{1},type);
@@ -63,14 +69,14 @@ set(nr,'Position',[100,100, 700, 700]);
 end
 
 function processLandscapes2012()
-pathsOrigWithoutGLY_Lp_Lp={'Results/save_2012-08-08_153735_KineticsModelLandscape_condition_5_withGLY_Lp025'...
-    'Results/save_2012-08-08_153749_KineticsModelLandscape_condition_5_withGLY_Lp05'...
-    'Results/save_2012-08-08_153759_KineticsModelLandscape_condition_5_withGLY_Lp1'...
-    'Results/save_2012-08-08_153814_KineticsModelLandscape_condition_5_withGLY_Lp2'...
-    'Results/save_2012-08-08_153839_KineticsModelLandscape_condition_7_withGLY_Lp025'...
-    'Results/save_2012-08-08_153854_KineticsModelLandscape_condition_7_withGLY_Lp05'...
-    'Results/save_2012-08-08_153942_KineticsModelLandscape_condition_7_withGLY_Lp1'...
-    'Results/save_2012-08-08_153952_KineticsModelLandscape_condition_7_withGLY_Lp2'...
+pathsOrigWithoutGLY_Lp_Lp={'../data/save_2012-08-08_153735_KineticsModelLandscape_condition_5_withGLY_Lp025'...
+    '../data/save_2012-08-08_153749_KineticsModelLandscape_condition_5_withGLY_Lp05'...
+    '../data/save_2012-08-08_153759_KineticsModelLandscape_condition_5_withGLY_Lp1'...
+    '../data/save_2012-08-08_153814_KineticsModelLandscape_condition_5_withGLY_Lp2'...
+    '../data/save_2012-08-08_153839_KineticsModelLandscape_condition_7_withGLY_Lp025'...
+    '../data/save_2012-08-08_153854_KineticsModelLandscape_condition_7_withGLY_Lp05'...
+    '../data/save_2012-08-08_153942_KineticsModelLandscape_condition_7_withGLY_Lp1'...
+    '../data/save_2012-08-08_153952_KineticsModelLandscape_condition_7_withGLY_Lp2'...
     };
 
 pathWithGLY_Lp_L2 ={'Results\save_2012-08-14_150852_KineticsModelLandscape_condition_5_AllCompsUnnormalizedSecondAggrL2_L025',...

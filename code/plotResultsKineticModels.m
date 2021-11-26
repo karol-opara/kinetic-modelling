@@ -201,7 +201,7 @@ ax = [-1 65 -yMax/30 yMax];
 end
 
 function plotExampleModel()
-load('Results/save_LowConcComparison_2013-07-05_121424_reg01')
+load('../data/save_LowConcComparison_2013-07-05_121424_reg01')
 m = model{3,7};
 ht = subplot(2,1,1);
 plotKineticModelFit(m);
@@ -302,19 +302,19 @@ end
 
 function hl =plotComparison(which,name)
 if (strcmp(name,'GoodDataNoRegularization'))
-    load('Results/save_LowConcComparison_2013-07-05_100552_reg0');
+    load('../data/save_LowConcComparison_2013-07-05_100552_reg0');
     m2 = model{1,2};
     m2log = model{3,2};
 elseif (strcmp(name,'GoodDataRegularization'))
-    load('Results/save_LowConcComparison_2013-07-05_183649_reg01');
+    load('../data/save_LowConcComparison_2013-07-05_183649_reg01');
     m2 = model{1,2};
     m2log = model{3,2};
 elseif (strcmp(name,'PoorDataNoRegularization'))
-    load('Results/save_LowConcComparison_2013-07-05_153144_reg0');
+    load('../data/save_LowConcComparison_2013-07-05_153144_reg0');
     m2 = model{1,4};
     m2log = model{4,4};
 elseif (strcmp(name,'PoorDataRegularization'))
-    load('Results/save_LowConcComparison_2013-07-05_183649_reg01');
+    load('../data/save_LowConcComparison_2013-07-05_183649_reg01');
     m2 = model{1,4};
     m2log = model{4,4};
 end

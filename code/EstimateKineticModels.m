@@ -3,7 +3,7 @@ function models = EstimateKineticModels(name)
 %load saveExperimentalData20120807;
 load saveExperimentalData20130319_8of13experiments_NRTLvalidation
 
-savefilename = ['Results/' 'save_KineticModels_' ...
+savefilename = ['../results/' 'save_KineticModels_' ...
     datestr(now,'yyyy-mm-dd_HHMMSS') '_' name];
 %p=[0.25 0.5 1 2];
 p=0.5;

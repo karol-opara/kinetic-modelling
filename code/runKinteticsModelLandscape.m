@@ -13,7 +13,7 @@ data = data{condition};
 
 type = 'batch';
 
-dir = 'Results/';
+dir = '../results/';
 savefilename = [dir 'save_' datestr(now,'yyyy-mm-dd_HHMMSS') ...
     '_KineticsModelLandscape_condition_' num2str(condition) '_' name '_L' num2str(p)...
     '_Q' num2str(q)];

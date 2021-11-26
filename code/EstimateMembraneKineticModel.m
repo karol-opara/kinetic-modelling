@@ -2,7 +2,7 @@ function model = EstimateMembraneKineticModel(name,lambda,id)
 dataRetentate=[];
 load('saveExperimentalData20130819_membrane')
 
-savefilename = ['Results/' 'save_KineticModel_Membrane_' ...
+savefilename = ['../results/' 'save_KineticModel_Membrane_' ...
     datestr(now,'yyyy-mm-dd_HHMMSS') '_' name];
 q = 'log'; % outer (inter-component) loss funciton
 p = 2; % inner loss function

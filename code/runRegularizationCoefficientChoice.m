@@ -12,7 +12,7 @@ goodData = data{2};
 %plotConcentrations(poorData.timeX, poorData.xml,poorData.timeY, poorData.yml,poorData.timeZ, poorData.zml, '-');
 %plotConcentrations(goodData.timeX, goodData.xml,goodData.timeY,goodData.yml,goodData.timeZ, goodData.zml, '-');
 
-savefilename = ['Results/' 'save_RegularizationCoefficients_' ...
+savefilename = ['../data/' 'save_RegularizationCoefficients_' ...
     datestr(now,'yyyy-mm-dd_HHMMSS') '_' name];
 lambdaZero = [1, 0];
 
@@ -34,7 +34,7 @@ lambda = zeros(length(p),length(q));
 if (optimization)
     for rep = 1:12
         if (loadData)
-            load('Results/save_RegularizationCoefficients_2013-07-23_092626_1e5Dim_LBFGS_PoorData_NonregularizedErrors');
+            load('../data/save_RegularizationCoefficients_2013-07-23_092626_1e5Dim_LBFGS_PoorData_NonregularizedErrors');
             warning('runRegularizationCoefficient','Data on the unregularized errors loaded instead of computing');
         else
             % options.MaxFunEvals = 6*1e4;
