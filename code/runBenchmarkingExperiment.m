@@ -29,6 +29,7 @@ savefilename = ['../results/' 'save_' datestr(now,'yyyy-mm-dd_HHMMSS') ...
     '_BenchmarkingExperiment_' num2str(N) '_Repetetive_Fits_' num2str(lambda)...
     '_RelativeLambda_' name '_minErr_' num2str(minErr)];
 savefilename(ismember(savefilename,' ,.:;!'))=[];
+savefilename = ['..' savefilename];
 
 disp(['Repetitive fits']);
 
@@ -166,6 +167,7 @@ savefilename = ['../results/' 'save_' datestr(now,'yyyy-mm-dd_HHMMSS') ...
     '_OptimizationComparison_' id, '_', num2str(N) '_RepetetiveFits_' ...
     name '_minErr_' num2str(minErr)];
 savefilename(ismember(savefilename,' ,.:;!'))=[];
+savefilename=['..', savefilename];
 
 disp('Comparing optimizers');
 

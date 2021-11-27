@@ -10,12 +10,17 @@ After finishing (usually time-consuming) computations, their results are stored 
 A comparison of optimizers for three selected loss functions, provided in Table 7 in the paper, was obtained from function `processOptimizationComparison`. The main method reads a cell array of paths to the files with simulation results. Editing of these paths allows for the application of this function for new data.
 
 A call example for loss function and regularization comparison (reproducing Table 5):
-`runRegularizedBenchmarkingExperiment('test_name', 'Noureddini', true, true, true, 100, false)` % Run the simulations
-`processBenchmarkingExperiment` % Processing of the results (caution: this requires modification of the file paths in the main method to process new results)
+
+`runRegularizedBenchmarkingExperiment('test_name', 'Noureddini', true, true, true, 100, false) ` 
+
+`processBenchmarkingExperiment % Processing of the results (caution: this requires modification of the file paths in the main method to process new results)`
 
 A call example for optimizer comparison (reproducing Table 7):
-`runRegularizedBenchmarkingExperiment('test_name', 'Noureddini', true, true, true, 30, true)` % Run the simulations
-`processOptimizationComparison` % Processing of the results (caution: this requires modification of the filepaths in the main method to process new results)
+
+`runRegularizedBenchmarkingExperiment('test_name', 'Noureddini', true, true, true, 30, true) % Processing of the results (caution: this requires modification of the filepaths in the main method to process new results)` 
+
+`processOptimizationComparison` 
+
 
 The results of simulations that are discussed in the paper are provided as .mat files so that processing can be started from them. 
 
